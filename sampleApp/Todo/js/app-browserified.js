@@ -528,96 +528,108 @@ module.exports = Fw;
 
 });
 
-require.define("/sampleApp/Todo/js/app.js",function(require,module,exports,__dirname,__filename,process,global){$(function () {
-  var Pasta = require('../../Pasta');
-  var __ = Pasta.__;
+require.define("/sampleApp/Todo/js/appModel.js",function(require,module,exports,__dirname,__filename,process,global){//model constructor
+function TodoItem (memo, id, checked) {
+  return {id: id, memo: memo, checked: checked};
+};
 
-  //model constructor
-  function TodoItem (memo, id, checked) {
-    return {id: id, memo: memo, checked: checked};
-  };
-
-  var appModel = {
-    'start': function (send) {
-      send({
-        todos: []
+var appModel = {
+  'start': function (send) {
+    send({
+      todos: []
       , curId: 0
-      });
-    }
+    });
+  }
   , 'todo-add': function (send, state, memo) {
-      var id = state.curId+1;
-      send({curId:id, todos: state.todos.concat(TodoItem(memo, id, false))});
-    }
+    var id = state.curId+1;
+    send({curId:id, todos: state.todos.concat(TodoItem(memo, id, false))});
+  }
   , 'todo-remove': function (send, state, id) {
-      send({todos: __.filter(function (it) { return it.id !== id })(state.todos)});
-    }
+    send({todos: __.filter(function (it) { return it.id !== id })(state.todos)});
+  }
   , 'todo-stat-change': function (send, state, item) {
-      send({
-        todos: __.map(function (it) {
-          if (it.id !== item.id) return it;
-          it.checked = item.checked;
-          return it;
-        })(state.todos)
-      });
-    }
-  };
+    send({
+      todos: __.map(function (it) {
+        if (it.id !== item.id) return it;
+        it.checked = item.checked;
+        return it;
+      })(state.todos)
+    });
+  }
+};
 
-  var view = {
-    id: function (UIAPI, state) {
-    }
+module.exports = appModel;
+});
+
+require.define("/sampleApp/Todo/js/viewUpdateRule.js",function(require,module,exports,__dirname,__filename,process,global){var updateRule = {
+  id: function (UIAPI, state) {
+  }
   , todos: function (UIAPI, state) {
-      UIAPI.todoList.renderTodos(state.todos);
-      UIAPI.todoList.renderCounter(state.todos.length);
-    }
-  };
+    UIAPI.todoList.renderTodos(state.todos);
+    UIAPI.todoList.renderCounter(state.todos.length);
+  }
+};
+
+module.exports = updateRule;
+});
+
+require.define("/sampleApp/Todo/js/ui/todoList",function(require,module,exports,__dirname,__filename,process,global){var todoTemplate = '<li class="{{completed}}">\
+  <div class="view">\
+    <input class="toggle" type="checkbox" data-id="{{id}}" {{checked_}} >\
+    <label>{{memo}}</label>\
+    <button class="destroy" data-id="{{id}}"></button>\
+  </div>\
+  <input class="edit" value="{{memo}}">\
+</li>';
 
 
-  var todoTemplate = '<li class="{{completed}}">\
-    <div class="view">\
-      <input class="toggle" type="checkbox" data-id="{{id}}" {{checked_}} >\
-      <label>{{memo}}</label>\
-      <button class="destroy" data-id="{{id}}"></button>\
-    </div>\
-    <input class="edit" value="{{memo}}">\
-  </li>';
+exports.initialize = function (_, signal) {
+  var $newTodo = $('#new-todo');
+  $newTodo.on('keypress', function (e) {
+    if (e.keyCode === 13)  {
+      signal('todo-add')($newTodo.val());
+      $newTodo.val('');
+    }
+  });
 
-  var todoListUI = {
-    initialize: function (_, signal) {
-      var $newTodo = $('#new-todo');
-      $newTodo.on('keypress', function (e) {
-        if (e.keyCode === 13)  {
-          signal('todo-add')($newTodo.val());
-          $newTodo.val('');
-        }
-      });
+  $('#todo-list').on('refresh', function () {
+    $('.destroy').click(signal('todo-remove', function (e) {return parseInt($(e.target).attr('data-id')); }));
+    $('.toggle').click(signal('todo-stat-change', function (e) { 
+      var t = $(e.target);
+      return {id: parseInt(t.attr('data-id')), checked: ! t.attr('checked')}; 
+    }));
+  });
+};
 
-      $('#todo-list').on('refresh', function () {
-        $('.destroy').click(signal('todo-remove', function (e) {return parseInt($(e.target).attr('data-id')); }));
-        $('.toggle').click(signal('todo-stat-change', function (e) { 
-          var t = $(e.target);
-          return {id: parseInt(t.attr('data-id')), checked: ! t.attr('checked')}; 
-        }));
-      });
-    }
-  , renderCounter: function (n) {
-      $('#todo-count strong').text(n);
-    }
-  , renderTodos: function (todos) {
-      $('#todo-list').html(__.fold(function (todo, str) {
-        var item = __.merge(todo, {
-          checked_: todo.checked ? 'checked' : ''
-        , completed:todo.checked ? 'completed' : ''
-        });
-        return str + __.template(todoTemplate, item);
-      }, "")(todos));
-      $('#todo-list').trigger('refresh');
-    }
-  };
+exports.renderCounter = function (n) {
+  $('#todo-count strong').text(n);
+};
+
+exports.renderTodos = function (todos) {
+  $('#todo-list').html(__.fold(function (todo, str) {
+    var item = __.merge(todo, {
+      checked_: todo.checked ? 'checked' : ''
+      , completed:todo.checked ? 'completed' : ''
+    });
+    return str + __.template(todoTemplate, item);
+  }, "")(todos));
+  $('#todo-list').trigger('refresh');
+};
+});
+
+require.define("/sampleApp/Todo/js/app.js",function(require,module,exports,__dirname,__filename,process,global){window.Pasta = require('../../Pasta');
+window.__ = Pasta.__;
+
+$(function () {
+
+  var appModel = require('./appModel');
+
+  var viewUpdateRule = require('./viewUpdateRule');
 
   Pasta.UIHandler(
     Pasta.mainloopGenerator(appModel)
-  , {todoList:todoListUI}
-  , view
+  , {todoList: require('./ui/todoList')}
+  , viewUpdateRule
   , $('#todo-content')
   ).start();
 
