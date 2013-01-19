@@ -62,6 +62,7 @@ var appModel = {
     send({notes: state.notes.concat({memo: memo})});
   }
 , 'fetch-notes-from-server': function (send, state) {
+    //send is a continuation-actor so we can perform async operations here
     httpRequest({
       url: '...'
     , type: 'GET'
@@ -85,6 +86,7 @@ var viewUpdateRule = {
     UIAPI.notesPage.updateNoteList(state.notes);
   }
 , page:  function (UIAPI, state, oldVal) {
+    //hide current page and show the new page
     switch (oldVal) {
       case 'topPage': UIAPI.topView.hide(); break;
       case 'notesPage': UIAPI.notesPage.hide(); break;
@@ -112,6 +114,7 @@ exports.initialize = function (parent, signal) {
 
   mainView.hide();
 
+  //when text is entered, signal 'add-note'
   textField.addEventListener('return', signal('add-note', function (e) { return e.source.value; }));
 };
 exports.updateNoteList = function (notes) {
@@ -131,14 +134,17 @@ var __ = Pasta.__;
 
 (function () {
 
-var appModel = require('appModel');  
+  var appModel = require('appModel');  
   
   var viewUpdateModel = require('viewUpdateModel');
 
   //Pasta.UIHandler is the source of magic
   Pasta.UIHandler(
     Pasta.mainloopGenerator(appModel)
-  , {todoList: require('./notePage')}
+  , {
+     notesPage: require('./notesPage')
+     topPage: ... 
+    }
   , viewUpdateRule
   , X.X.createWindow()
   ).start();
