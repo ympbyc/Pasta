@@ -1,7 +1,7 @@
 Pasta
 =====
 
-** Functional realization of the MVC pattern **
+**Functional realization of the MVC pattern**
 
 ```
  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -24,20 +24,20 @@ Features
 
 ### The State ###
 
-Every application built with Pasta has a single model that holds all the sub-models that changes during execution. We call it ** the state **.
-Pasta programs are referencially transparent about ** the state **, meaning it is guaranteed the state maps one-to-one to the visual representation of UIs. 
+Every application built with Pasta has a single model that holds all the sub-models that changes during execution. We call it **the state**.
+Pasta programs are referencially transparent about **the state**, meaning it is guaranteed the state maps one-to-one to the visual representation of UIs. 
 Allowing apps to hibernate and respring.
 
 ### Configuration-oriented ###
 
 Unlike other frameworks, Pasta programs does not contain classes. 
-Instead, they consist of two ** configuration hash ** and several UI components.  
+Instead, they consist of two **configuration hash** and several UI components.  
 The first configuration hash is called the `appModel`. 
 It maps `signals` to actors(functions) that produce patches to the current state of the app.  
 The second config hash called `viewUpdateRule` is used to reflect the changes to UIs.
 
 Functions in these hashes are given access to a carefuly chosen set of infomations and APIs 
-to let users think ** inside of the box ** so the paradigm doesn't break.
+to let users think **inside of the box** so the paradigm doesn't break.
 
 ### Functional ###
 
