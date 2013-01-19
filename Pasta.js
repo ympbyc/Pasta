@@ -1,5 +1,5 @@
 var Pasta = (function () {
-  var __ = require('Fw');
+  var __ = require('./Fw');
 
   var UIHandler = function (mainloop, uiModules, updateRule, parentUI) {
     var UIAPI = {};      //namespace for functions that manipulate UIs
