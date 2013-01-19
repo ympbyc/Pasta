@@ -21,7 +21,7 @@ var Pasta = (function () {
       var tempState = __.merge(appState, patch);
       __.hashFold(patch, null, function (change, key) {
         if (!appState[key]) return;
-        if (updateRule[key] !== undefined) updateRule[key](UIAPI, tempState, appState);
+        if (updateRule[key] !== undefined) updateRule[key](UIAPI, tempState, appState[key]);
       });
     }
   
