@@ -1,7 +1,6 @@
-var __ = require('../Fw');
-
 (function () {
   var Pasta = require('../Pasta');
+  var __ = Pasta.__;
 
   var config = {
     'start': function (send) {
