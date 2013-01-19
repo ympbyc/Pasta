@@ -11,21 +11,13 @@ var Fw = (function () {
     return last;
   };
 
-  //each :: (a -> VOID) -> [a] -> VOID
-  __.each = function (fn) {
-    return function (ls) {
-      var i;
-      for (i = 0; i < ls.length; ++i)
-        fn(ls[i]);
-    };
-  };
   //fold :: (a -> b -> b) -> b -> [a] -> b
   __.fold = function (fn, init) {
     return function (ls) {
       var last = init;
-      __.each(function (it) {
+      ls.forEach(function (it) {
         last = fn(it, last);
-      })(ls);
+      });
       return last;
     };
   };
