@@ -1,7 +1,7 @@
-var __ = require('../Fw');
+var __ = require('Fw');
 
 (function () {
-  var Pasta = require('../Pasta');
+  var Pasta = require('Pasta');
 
   var config = {
     'start': function (send) {
