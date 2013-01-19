@@ -58,8 +58,8 @@ var appModel = {
   'start': function (send) {
     send({page:'top', notes:[]}); //initial state
   }
-, 'add-note': function (send, state, item) {
-    send({notes: state.notes.concat(item)});
+, 'add-note': function (send, state, memo) {
+    send({notes: state.notes.concat({memo: memo})});
   }
 , 'fetch-notes-from-server': function (send, state) {
     httpRequest({
@@ -108,14 +108,16 @@ The only requirement is that user interactions are bound to the `signals`.
 //If `initialize` function is defined, it gets called with the pointer to parent element and the `signal` function
 exports.initialize = function (parent, signal) {
   var mainView = add(parent, X.X.createView());
+  var textField = add(mainView, X.X.createTextField());
 
   mainView.hide();
 
-  exports.updateNoteList = function (notes) {
-    notes.forEach(function (note) {
-      add(mainView, X.X.createLabel({text: note.memo}));
-    });
-  };
+  textField.addEventListener('return', signal('add-note', function (e) { return e.source.value; }));
+};
+exports.updateNoteList = function (notes) {
+  notes.forEach(function (note) {
+    add(mainView, X.X.createLabel({text: note.memo}));
+  });
 };
 exports.show = ...
 exports.hide = ...
