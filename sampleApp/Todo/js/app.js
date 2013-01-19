@@ -8,7 +8,7 @@ $(function () {
   var viewUpdateRule = require('./viewUpdateRule');
 
   Pasta.UIHandler(
-    Pasta.mainloopGenerator(appModel)
+    appModel
   , {todoList: require('./ui/todoList')}
   , viewUpdateRule
   , $('#todo-content')

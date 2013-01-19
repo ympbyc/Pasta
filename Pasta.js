@@ -1,10 +1,17 @@
 var Pasta = (function () {
   var __ = require('./Fw');
 
-  var UIHandler = function (mainloop, UIAPI, updateRule, parentUI) {
-    var UIAPI = {};      //namespace for functions that manipulate UIs
+  var mainloopGenerator = function (config) {
+    return function (api, state, ev, ev_val) {
+      var kont = function (patch) { api.modifyState(patch); };
+      config[ev](kont, state, ev_val);
+    };
+  };
+
+  var UIHandler = function (appModel, UIAPI, updateRule, parentUI) {
     var self = {};       //interface to the external world
     var appState = {};   //mutable application state
+    var mainloop = mainloopGenerator(appModel);
     
     var signal = function (ev_name, fn) {
       return function (e) {
@@ -35,17 +42,9 @@ var Pasta = (function () {
   
     return self;
   };
-  
-  var mainloopGenerator = function (config) {
-    return function (api, state, ev, ev_val) {
-      var kont = function (patch) { api.modifyState(patch); };
-      config[ev](kont, state, ev_val);
-    };
-  };
 
   return {
-    mainloopGenerator: mainloopGenerator
-  , UIHandler: UIHandler
+    UIHandler: UIHandler
   , __: __
   };
 }());

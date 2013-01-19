@@ -43,7 +43,7 @@ var __ = require('Fw');
   var win = Ti.UI.createWindow();
 
   Pasta.UIHandler(
-    Pasta.mainloopGenerator(config)
+    config
   , {
       noteList: require('ui/noteListView')
     , page1: require('ui/page1')

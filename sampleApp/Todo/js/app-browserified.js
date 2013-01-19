@@ -394,10 +394,17 @@ process.binding = function (name) {
 require.define("/Pasta.js",function(require,module,exports,__dirname,__filename,process,global){var Pasta = (function () {
   var __ = require('./Fw');
 
-  var UIHandler = function (mainloop, uiModules, updateRule, parentUI) {
-    var UIAPI = {};      //namespace for functions that manipulate UIs
+  var mainloopGenerator = function (config) {
+    return function (api, state, ev, ev_val) {
+      var kont = function (patch) { api.modifyState(patch); };
+      config[ev](kont, state, ev_val);
+    };
+  };
+
+  var UIHandler = function (appModel, UIAPI, updateRule, parentUI) {
     var self = {};       //interface to the external world
     var appState = {};   //mutable application state
+    var mainloop = mainloopGenerator(appModel);
     
     var signal = function (ev_name, fn) {
       return function (e) {
@@ -405,10 +412,6 @@ require.define("/Pasta.js",function(require,module,exports,__dirname,__filename,
         mainloop(self, appState, ev_name, val);
       };
     };
-  
-    __.hashFold(uiModules, null, function (mdl, key) {
-      UIAPI[key] = mdl;
-    });
   
     function autoUpdate (patch) {
       var tempState = __.merge(appState, patch);
@@ -432,17 +435,9 @@ require.define("/Pasta.js",function(require,module,exports,__dirname,__filename,
   
     return self;
   };
-  
-  var mainloopGenerator = function (config) {
-    return function (api, state, ev, ev_val) {
-      var kont = function (patch) { api.modifyState(patch); };
-      config[ev](kont, state, ev_val);
-    };
-  };
 
   return {
-    mainloopGenerator: mainloopGenerator
-  , UIHandler: UIHandler
+    UIHandler: UIHandler
   , __: __
   };
 }());
@@ -537,17 +532,17 @@ var appModel = {
   'start': function (send) {
     send({
       todos: []
-      , curId: 0
+    , curId: 0
     });
   }
-  , 'todo-add': function (send, state, memo) {
+, 'todo-add': function (send, state, memo) {
     var id = state.curId+1;
     send({curId:id, todos: state.todos.concat(TodoItem(memo, id, false))});
   }
-  , 'todo-remove': function (send, state, id) {
+, 'todo-remove': function (send, state, id) {
     send({todos: __.filter(function (it) { return it.id !== id })(state.todos)});
   }
-  , 'todo-stat-change': function (send, state, item) {
+, 'todo-stat-change': function (send, state, item) {
     send({
       todos: __.map(function (it) {
         if (it.id !== item.id) return it;
@@ -564,7 +559,7 @@ module.exports = appModel;
 require.define("/sampleApp/Todo/js/viewUpdateRule.js",function(require,module,exports,__dirname,__filename,process,global){var updateRule = {
   id: function (UIAPI, state) {
   }
-  , todos: function (UIAPI, state) {
+, todos: function (UIAPI, state) {
     UIAPI.todoList.renderTodos(state.todos);
     UIAPI.todoList.renderCounter(state.todos.length);
   }
@@ -573,7 +568,7 @@ require.define("/sampleApp/Todo/js/viewUpdateRule.js",function(require,module,ex
 module.exports = updateRule;
 });
 
-require.define("/sampleApp/Todo/js/ui/todoList",function(require,module,exports,__dirname,__filename,process,global){var todoTemplate = '<li class="{{completed}}">\
+require.define("/sampleApp/Todo/js/ui/todoList.js",function(require,module,exports,__dirname,__filename,process,global){var todoTemplate = '<li class="{{completed}}">\
   <div class="view">\
     <input class="toggle" type="checkbox" data-id="{{id}}" {{checked_}} >\
     <label>{{memo}}</label>\
@@ -627,7 +622,7 @@ $(function () {
   var viewUpdateRule = require('./viewUpdateRule');
 
   Pasta.UIHandler(
-    Pasta.mainloopGenerator(appModel)
+    appModel
   , {todoList: require('./ui/todoList')}
   , viewUpdateRule
   , $('#todo-content')

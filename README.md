@@ -17,7 +17,7 @@ Pasta
  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 ```
 
-Pasta is an extremely lightweight (57 lines - uncompressed) GUI programming framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
+Pasta is an extremely lightweight (53 lines - uncompressed) GUI programming framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
 
 Features
 --------
@@ -140,7 +140,7 @@ var __ = Pasta.__;
 
   //Pasta.UIHandler is the source of magic
   Pasta.UIHandler(
-    Pasta.mainloopGenerator(appModel)
+    appModel
   , {
      notesPage: require('./notesPage')
      topPage: ... 
