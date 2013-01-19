@@ -25,11 +25,11 @@ var __ = require('Fw');
   };
   
   var updateRule = {
-    notes: function (UIAPI, tempState, oldState) {
+    notes: function (UIAPI, tempState, oldVal) {
       UIAPI.noteList.updateNotes(tempState.notes);
     }
-  , page: function (UIAPI, tempState, oldState) {
-      switch (oldState.page) {
+  , page: function (UIAPI, tempState, oldVal) {
+      switch (oldVal) {
         case 'page1'   : UIAPI.page1.hide(); break;
         case 'noteList': UIAPI.noteList.hide(); break;
       }
