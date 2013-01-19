@@ -1,7 +1,7 @@
 var Pasta = (function () {
   var __ = require('./Fw');
 
-  var UIHandler = function (mainloop, uiModules, updateRule, parentUI) {
+  var UIHandler = function (mainloop, UIAPI, updateRule, parentUI) {
     var UIAPI = {};      //namespace for functions that manipulate UIs
     var self = {};       //interface to the external world
     var appState = {};   //mutable application state
@@ -12,10 +12,6 @@ var Pasta = (function () {
         mainloop(self, appState, ev_name, val);
       };
     };
-  
-    __.hashFold(uiModules, null, function (mdl, key) {
-      UIAPI[key] = mdl;
-    });
   
     function autoUpdate (patch) {
       var tempState = __.merge(appState, patch);
