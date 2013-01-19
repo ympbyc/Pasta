@@ -7,7 +7,7 @@ var appModel = {
   'start': function (send) {
     send({
       todos: []
-      , curId: 0
+    , curId: 0
     });
   }
 , 'todo-add': function (send, state, memo) {
