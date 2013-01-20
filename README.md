@@ -50,7 +50,7 @@ If `Pasta.__` does not suffice your needs, checkout underscore.js.
 How it works
 ------------
 
-![How Pasta works](diagram.png)
+![How Pasta works](Pasta/diagram.png)
 
 Example
 -------
