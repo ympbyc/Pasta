@@ -130,7 +130,7 @@ exports.show = ...
 exports.hide = ...
 ```
 
-Finally, we kick things up in app.js
+Finally, we kick things off in app.js
 
 ```javascript
 var Pasta = require('Pasta');
@@ -165,7 +165,7 @@ What Pasta is and what it is not
 Tips
 ----
 
-**The state** can be persisted into localstorage, remote server, or anywhere you can think of. Just serialize it into JSON and save.
+**The state** can be persisted into localstorage, remote server or anywhere you can think of. Just serialize it into JSON and save.
 
 Here goes a crazy tip: you can persist **the state** into **the state** itself! If you know what I mean...
 
@@ -187,6 +187,6 @@ var appModel = {
 Licence and stuff
 -----------------
 
-Pasta is licenced under DOWHATEVERYOUWANTWITHIT licence
+Pasta is licenced under MIT licence
 
 Use it on your own responsibility.
