@@ -181,7 +181,7 @@ var appModel = {
 };
 ```
 
-![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.png)
+![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.jpg)
 
 
 Licence and stuff
