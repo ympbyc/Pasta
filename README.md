@@ -50,7 +50,7 @@ If `Pasta.__` does not suffice your needs, checkout underscore.js.
 How it works
 ------------
 
-![How Pasta works](https://raw.github.com/ympbyc/Pasta/master/diagram.png)
+![How Pasta works](https://raw.github.com/ympbyc/Pasta/master/assets/img/diagram.png)
 
 Example
 -------
@@ -160,6 +160,28 @@ What Pasta is and what it is not
 -----------------------------
 
 //A lot of stuff should go in here
+
+
+Tips
+----
+
+**The state** can be persisted into localstorage, remote server, or anywhere you can think of. Just serialize it into JSON and save.
+
+Here goes a crazy tip: you can persist **the state** into **the state** itself! If you know what I mean...
+
+```javascript
+var appModel = {
+  'saveHistory': function (send, state) {
+    send({previousState: __.merge({}, state)});
+  }
+, 'back-to-the-future': function (send, state) {
+    //go back 2 steps
+    send(state.previousState.previousState);
+  }
+};
+```
+
+![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.png)
 
 
 Licence and stuff
