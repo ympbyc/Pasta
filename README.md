@@ -25,7 +25,7 @@ Features
 ### The State ###
 
 Every application built with Pasta has a single model that holds all the sub-models that changes during execution. We call it **the state**.
-Pasta programs are referencially transparent about **the state**, meaning it is guaranteed the state maps one-to-one to the visual representation of UIs. 
+Pasta programs are referencially transparent about **the state**, meaning it is guaranteed the state maps one-to-one to the view. 
 Allowing apps to hibernate and respring.
 
 ### Configuration-oriented ###
@@ -82,7 +82,7 @@ var appModel = {
 ```
 
 Next we create the `viewUpdateRule`.
- `viewUpdateRule` is a mapping between state changes and visual presentations.
+ `viewUpdateRule` is a mapping between state changes and actual UIs.
 
 ```javascript
 var viewUpdateRule = {
@@ -138,29 +138,58 @@ var __ = Pasta.__;
 
 (function () {
 
-  var appModel = require('appModel');  
+  var win = X.X.createWindow()
   
-  var viewUpdateModel = require('viewUpdateModel');
-
   //Pasta.UIHandler is the source of magic
   Pasta.UIHandler(
-    appModel
+    require('appModel')
   , {
      notesPage: require('./notesPage')
      topPage: ... 
     }
-  , viewUpdateRule
-  , X.X.createWindow()
+  , require('viewUpdateRule')
+  , win
   ).start();
+
+  win.open();
 
 }());
 ```
 
-What Pasta is and what it is not
------------------------------
+Pasta is
+--------
 
-//A lot of stuff should go in here
+### a jail ###
 
+MVC, from its origin (Smalltalk), is deeply associated with object-oriented programming. 
+Typical MVC framework provides base classes Model, View and Controller for us to inherit.
+This approach however, gives too much freedom to us and often we end up violating the PDS concept.  
+Pasta avoids this problem by putting us inside a cage where we are given access to only a limited range of information and APIs that Pasta chooses.
+For example: `appModel` has to be a hash of functions, not a class, forbidding to have a local state to share among other functions thus functions in the hash can only use what Pasta gives to it as arguments.
+
+### capable of handling meta-applications ###
+
+Pasta is a great tool to avoid pieces of states scattered all over your app. 
+If your app is made up of hundreds of mutable objects, it is rather cumbersome to gather them all and inspect or save the state of the app while it is running.  
+Meanwhile, Pasta forces every changeable data to be put into **the state**, allowing us to inspect, save, load, metaprogram the app.
+
+### Platform independent ###
+
+Pasta does not assume a particular platform where it is used. You can use Pasta in any JavaScript environment with any GUI APIs.
+
+Pasta is not
+------------
+
+### object oriented ###
+
+This is very important. Pasta does not mix data and behaviours. `appModel` and `viewUpdateRule` is collections only of functions, 
+and **the state** is a collection only of data. With Pasta, it is highly possible to create apps that does not contain a single `this` keyword.
+
+You could of course use your favourite data structure to put into the state, but it is not the concern of Pasta.
+
+### concerned with how views are created  ###
+
+Because Pasta is platform independent, it does not provide view generation mechanisms. You have to do it on your own using for example jQuery or Titanium.UI.
 
 Tips
 ----
