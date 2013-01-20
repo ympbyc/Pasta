@@ -7,38 +7,32 @@ var __ = require('Fw');
     'start': function (send) {
       send({
         notes: []
-      , page: 'noteList'
-      });
-    }
-    , 'note-submit': function (send, state, data) {
-      send({notes: state.notes.concat(data)});
-    }
-    , 'remove-note': function (send, state, data) {
-      send({notes: __.remove(data)(state.notes)});
-    }
-    , 'page-to-noteList': function (send) {
-      send({page: 'noteList'});
-    }
-    , 'page-to-page1': function (send) {
-      send({page: 'page1'});
-    }
-  };
+      , page: 'noteList'});}
+
+  , 'note-submit': function (send, state, data) {
+      send({notes: state.notes.concat(data)});}
+
+  , 'remove-note': function (send, state, data) {
+      send({notes: __.remove(data)(state.notes)});}
+
+  , 'page-to-noteList': function (send) {
+      send({page: 'noteList'});}
+
+  , 'page-to-page1': function (send) {
+      send({page: 'page1'});}};
   
+
   var updateRule = {
     notes: function (UIAPI, tempState, oldVal) {
-      UIAPI.noteList.updateNotes(tempState.notes);
-    }
+      UIAPI.noteList.updateNotes(tempState.notes);}
+      
   , page: function (UIAPI, tempState, oldVal) {
       switch (oldVal) {
         case 'page1'   : UIAPI.page1.hide(); break;
-        case 'noteList': UIAPI.noteList.hide(); break;
-      }
+        case 'noteList': UIAPI.noteList.hide(); break;}
       switch (tempState.page) {
         case 'page1'   : UIAPI.page1.show(); break;
-        case 'noteList': UIAPI.noteList.show(); break;
-      }
-    }
-  };
+        case 'noteList': UIAPI.noteList.show(); break;}}};
   
   var win = Ti.UI.createWindow();
 

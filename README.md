@@ -1,7 +1,7 @@
 Pasta
 =====
 
-**Functional realization of the MVC pattern**
+**Meta application framework**
 
 ```
  .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
@@ -17,7 +17,7 @@ Pasta
  '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
 ```
 
-Pasta is an extremely lightweight (53 lines - uncompressed) GUI programming framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
+Pasta is an extremely lightweight (53 lines - uncompressed) MVC-like framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
 
 Features
 --------
@@ -60,10 +60,16 @@ First, we create the `appModel` that maps signals to patches.
 ```javascript
 var appModel = {
   'start': function (send) {
-    send({page:'top', notes:[]}); //initial state
+    //initial state
+    send({
+      page:'top'
+    , notes:[]
+    });
   }
 , 'add-note': function (send, state, memo) {
-    send({notes: state.notes.concat({memo: memo})});
+    send({
+      notes: state.notes.concat({memo: memo})
+    });
   }
 , 'fetch-notes-from-server': function (send, state) {
     //send is a continuation-actor so we can perform async operations here
@@ -75,9 +81,11 @@ var appModel = {
     }});
   }
 , 'switch-page-to-top': function (send) {
-    send({page: 'topPage'});
+    send({
+      page: 'topPage'
+    });
   }
-//......
+  //......
 };
 ```
 
@@ -173,7 +181,7 @@ Pasta is a great tool to avoid pieces of states scattered all over your app.
 If your app is made up of hundreds of mutable objects, it is rather cumbersome to gather them all and inspect or save the state of the app while it is running.  
 Meanwhile, Pasta forces every changeable data to be put into **the state**, allowing us to inspect, save, load, metaprogram the app.
 
-### Platform independent ###
+### platform independent ###
 
 Pasta does not assume a particular platform where it is used. You can use Pasta in any JavaScript environment with any GUI APIs.
 
