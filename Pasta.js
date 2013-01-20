@@ -1,3 +1,8 @@
+/*
+ * Pasta.js
+ * 2013 Minori Yamashita <ympbyc@gmail.com>
+ */
+
 var Pasta = (function () {
   var __ = require('./Fw');
 
