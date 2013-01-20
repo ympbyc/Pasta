@@ -47,6 +47,10 @@ Pasta is an attempt to do GUI programming in a functional way, yet easy enough t
 `Pasta.__` provides some basic enumerable functions that are convinient when working with collection type models. 
 If `Pasta.__` does not suffice your needs, checkout underscore.js.
 
+How it works
+------------
+
+![How Pasta works](diagram.png)
 
 Example
 -------
