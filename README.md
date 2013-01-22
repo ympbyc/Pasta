@@ -36,7 +36,7 @@ The first configuration hash is called the `appModel`.
 It maps `signals` to actors(functions) that produce patches to the current state of the app.  
 The second config hash called `viewUpdateRule` is used to reflect the changes to UIs.
 
-Functions in these hashes are given access to a carefuly chosen set of infomations and APIs 
+Functions in these hashes are given access to a carefuly chosen set of informations and APIs 
 to let users think **inside of the box** so the paradigm doesn't break.
 
 ### Functional ###
@@ -191,7 +191,7 @@ Pasta is not
 ### object oriented ###
 
 This is very important. Pasta does not mix data and behaviours. `appModel` and `viewUpdateRule` is collections only of functions, 
-and **the state** is a collection only of data. With Pasta, it is highly possible to create apps that does not contain a single `this` keyword.
+and **the state** is a collection only of data. With Pasta, it is highly possible to create apps that do not contain a single `this` keyword.
 
 You could of course use your favourite data structure to put into the state, but it is not the concern of Pasta.
 
