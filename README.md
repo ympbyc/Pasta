@@ -1,10 +1,10 @@
 Pasta
 =====
 
-**Meta application framework**
+**Actor-based MVC Framework**
 
 ```
- .----------------.  .----------------.  .----------------.  .----------------.  .----------------. 
+ .----------------.  .----------------.  .----------------.  .----------------.  .----------------.
 | .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
 | |   ______     | || |      __      | || |    _______   | || |  _________   | || |      __      | |
 | |  |_   __ \   | || |     /  \     | || |   /  ___  |  | || | |  _   _  |  | || |     /  \     | |
@@ -14,37 +14,35 @@ Pasta
 | |  |_____|     | || ||____|  |____|| || |  |_______.'  | || |   |_____|    | || ||____|  |____|| |
 | |              | || |              | || |              | || |              | || |              | |
 | '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
- '----------------'  '----------------'  '----------------'  '----------------'  '----------------' 
+ '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
 ```
 
-Pasta is an extremely lightweight (53 lines - uncompressed) MVC-like framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
+Pasta is an extremely lightweight (71 lines - uncompressed) Actor-based application framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
+
+If you are not familiar with the term **actor**, I suggest you read [ympbyc/Pasta/docs/actorsInJs.md](https://github.com/ympbyc/Pasta/master/docs/actorsInJs.md).
 
 Features
 --------
 
 ### The State ###
 
-Every application built with Pasta has a single model that holds all the sub-models that changes during execution. We call it **the state**.
-Pasta programs are referencially transparent about **the state**, meaning it is guaranteed the state maps one-to-one to the view. 
+Every application built with Pasta has a single model that holds all the sub-models that are passed around between actors as a READONLY object. We call it **the state**.
+Pasta programs are referencially transparent about **the state**, meaning it is guaranteed the state maps one-to-one to the view.
 Allowing apps to hibernate and respring.
 
-### Configuration-oriented ###
+### The Actors ###
 
-Unlike other frameworks, Pasta programs does not contain classes. 
-Instead, they consist of two **configuration hash** and several UI components.  
-The first configuration hash is called the `appModel`. 
-It maps `signals` to actors(functions) that produce patches to the current state of the app.  
-The second config hash called `viewUpdateRule` is used to reflect the changes to UIs.
+Unlike other frameworks, Pasta source does not contain classes.
+Instead they are made up of actors: an **appActor**, an **viewUpdateActor** and several **UI actors**. Each actor contains many smaller actors inside it.
+`Pasta` function takes these three kinds of actors and connects them to form one application.
 
-Functions in these hashes are given access to a carefuly chosen set of informations and APIs 
-to let users think **inside of the box** so the paradigm doesn't break.
+Each of the actors named above are given access to only a limited range of objects, making it impossible to breach the Presentation-Domain-Separation concept.
 
 ### Functional ###
 
-May be because of too much exposure to Scheme and SML, I happen to be no longer appreciating OOP as much as I did a while back.
 Pasta is an attempt to do GUI programming in a functional way, yet easy enough to learn.
 
-`Pasta.__` provides some basic enumerable functions that are convinient when working with collection type models. 
+`Pasta.__` provides some basic enumerable functions that are convinient when working with collection type models.
 If `Pasta.__` does not suffice your needs, checkout underscore.js.
 
 How it works
@@ -52,13 +50,15 @@ How it works
 
 ![How Pasta works](https://raw.github.com/ympbyc/Pasta/master/assets/img/diagram.png)
 
+NOTE: some names in the diagram is old. `appModel` is now called `appActor`, `viewUpdateRule` is now called `viewUpdateActor`.
+
 Example
 -------
 
-First, we create the `appModel` that maps signals to patches.
+First, we create the `appActor` that maps signals to patches.
 
 ```javascript
-var appModel = {
+var appActor = {
   'start': function (send) {
     //initial state
     send({
@@ -89,53 +89,62 @@ var appModel = {
 };
 ```
 
-Next we create the `viewUpdateRule`.
- `viewUpdateRule` is a mapping between state changes and actual UIs.
+Next we create the `viewUpdateActor`.
+ `viewUpdateActor` maps the change in state to UIs.
 
 ```javascript
-var viewUpdateRule = {
-  notes: function (UIAPI, state) {
-    UIAPI.notesPage.updateNoteList(state.notes);
+var viewUpdateActor = {
+  //UI is a hash of UI actors, state is the next state//
+  notes: function (UI, state) {
+    UI.notesPage.updateNoteList(state.notes);
   }
-, page:  function (UIAPI, state, oldVal) {
+, page:  function (UI, state, oldVal) {
     //hide current page and show the new page
     switch (oldVal) {
-      case 'topPage': UIAPI.topView.hide(); break;
-      case 'notesPage': UIAPI.notesPage.hide(); break;
+      case 'topPage': UI.topView.hide(); break;
+      case 'notesPage': UI.notesPage.hide(); break;
     }
     switch (state.page) {
-      case 'topPage': UIAPI.topView.show(); break;
-      case 'notesPage': UIAPI.notesPage.show(); break;
+      case 'topPage': UI.topView.show(); break;
+      case 'notesPage': UI.notesPage.show(); break;
     }
   }
 //.......
 };
 ```
 
-To show the models we need to create views. 
-Pasta does not concern about how views(UIs) are created and manipulated, and it provides no support for UI manipulation. 
-The only requirement is that user interactions are bound to the `signals`.
+To show the models we need UIs.
+Pasta does not provide support for UI manipulation.
+UI actors have to respond to the message `initialize`, that will receive `signal` function.
+UIs send messages to the app through this `signal` function, whenever user interacts with it.
 
 ```javascript
 //notesPage.js
+(function () {
+  var self = {};
 
-//If `initialize` function is defined, it gets called with the pointer to parent element and the `signal` function
-exports.initialize = function (parent, signal) {
-  var mainView = add(parent, X.X.createView());
-  var textField = add(mainView, X.X.createTextField());
+  var mainView;
 
-  mainView.hide();
+  //If `initialize` function is defined, it gets called with the pointer to parent element and the `signal` function
+  self.initialize = function (parent, signal) {
+    mainView = add(parent, X.X.createView());
+    var textField = add(mainView, X.X.createTextField());
 
-  //when text is entered, signal 'add-note'
-  textField.addEventListener('return', signal('add-note', function (e) { return e.source.value; }));
-};
-exports.updateNoteList = function (notes) {
-  notes.forEach(function (note) {
-    add(mainView, X.X.createLabel({text: note.memo}));
-  });
-};
-exports.show = ...
-exports.hide = ...
+    mainView.hide();
+
+    //when text is entered, signal 'add-note'
+    textField.addEventListener('return', signal('add-note', function (e) { return e.source.value; }));
+  };
+  self.updateNoteList = function (notes) {
+    notes.forEach(function (note) {
+      add(mainView, X.X.createLabel({text: note.memo}));
+    });
+  };
+  self.show = ...
+  self.hide = ...
+
+  return self;
+}())
 ```
 
 Finally, we kick things off in app.js
@@ -146,17 +155,16 @@ var __ = Pasta.__;
 
 (function () {
 
-  var win = X.X.createWindow()
-  
-  //Pasta.UIHandler is the source of magic
-  Pasta.UIHandler(
-    require('appModel')
-  , {
+  var win = X.X.createWindow(); //the `parent` object passed to each UI's `initialize`
+
+  Pasta(
+    require('appActor')                  //appActor
+  , {                                    //UI actors
      notesPage: require('./notesPage')
-     topPage: ... 
+     topPage: ...
     }
-  , require('viewUpdateRule')
-  , win
+  , require('viewUpdateActor')           //viewUpdateActor
+  , win                                  //parent
   ).start();
 
   win.open();
@@ -169,16 +177,20 @@ Pasta is
 
 ### a jail ###
 
-MVC, from its origin (Smalltalk), is deeply associated with object-oriented programming. 
+MVC, from its origin (Smalltalk), is deeply associated with object-oriented programming.
 Typical MVC framework provides base classes Model, View and Controller for us to inherit.
-This approach however, gives too much freedom to us and often we end up violating the PDS concept.  
-Pasta avoids this problem by putting us inside a cage where we are given access to only a limited range of information and APIs that Pasta chooses.
-For example: `appModel` has to be a hash of functions, not a class, forbidding to have a local state to share among other functions thus functions in the hash can only use what Pasta gives to it as arguments.
+This approach however, gives too much freedom to us and often we end up violating the PDS concept.
+Pasta avoids this problem by putting us inside a cage where we are given access to only a limited range of information and objects that Pasta chooses.
+For example: `appActor` is a hash of functions, not a class, forbidding to have a local state to share among other functions thus functions in the hash can only use what Pasta gives to it as arguments.
+
+Here are some more restlictions:
++ No actor can directly mutate the `appState`,
++ `appActor` and `viewUpdateActor`, UI actors and `appActor` can not message eachother directly, it has to be done through `signal` and `send` respectively.
 
 ### capable of handling meta-applications ###
 
-Pasta is a great tool to avoid pieces of states scattered all over your app. 
-If your app is made up of hundreds of mutable objects, it is rather cumbersome to gather them all and inspect or save the state of the app while it is running.  
+Pasta is a great tool to avoid pieces of states scattered all over your app.
+If your app is made up of hundreds of mutable objects, it is rather cumbersome to gather them all and inspect or save the state of the app while it is running.
 Meanwhile, Pasta forces every changeable data to be put into **the state**, allowing us to inspect, save, load, metaprogram the app.
 
 ### platform independent ###
@@ -190,14 +202,11 @@ Pasta is not
 
 ### object oriented ###
 
-This is very important. Pasta does not mix data and behaviours. `appModel` and `viewUpdateRule` is collections only of functions, 
+This is very important. Pasta does not mix data and behaviours. `appActor` and `viewUpdateActor` is collections only of functions,
 and **the state** is a collection only of data. With Pasta, it is highly possible to create apps that do not contain a single `this` keyword.
 
-You could of course use your favourite data structure to put into the state, but it is not the concern of Pasta.
+You could of course use your favourite data structure to put into the state or use OO libraries for UI manipulations, but it is not the concern of Pasta.
 
-### concerned with how views are created  ###
-
-Because Pasta is platform independent, it does not provide view generation mechanisms. You have to do it on your own using for example jQuery or Titanium.UI.
 
 Tips
 ----
@@ -207,7 +216,7 @@ Tips
 Here goes a crazy tip: you can persist **the state** into **the state** itself! If you know what I mean...
 
 ```javascript
-var appModel = {
+var appActor = {
   'saveHistory': function (send, state) {
     send({previousState: __.merge({}, state)});
   }
