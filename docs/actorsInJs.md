@@ -7,7 +7,8 @@ Actors can
 + create more actors
 + send messages
 + determine how to respond to the next message received
-*-- wikipedia*
+
+*-- from wikipedia*
 
 Asynchronous Functions
 ----------------------
@@ -18,7 +19,7 @@ Functions (especially asynchronous ones) are actors that respond to a single mes
 aFunction .call (anObject, optionalArg, ...)
 ```
 
-and this has a syntactic suger of
+and they have a syntactic suger:
 
 ```javascript
 aFunction (optionalArg, ...)
