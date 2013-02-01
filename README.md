@@ -19,7 +19,7 @@ Pasta
 
 Pasta is an extremely lightweight (71 lines - uncompressed) Actor-based application framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
 
-If you are not familiar with the term **actor**, I suggest you read [ympbyc/Pasta/docs/actorsInJs.md](https://github.com/ympbyc/Pasta/master/docs/actorsInJs.md).
+If you are not familiar with the term **actor**, I suggest you read [ympbyc/Pasta/docs/actorsInJs.md](https://github.com/ympbyc/Pasta/blob/master/docs/actorsInJs.md).
 
 Features
 --------
@@ -115,7 +115,7 @@ var viewUpdateActor = {
 
 To show the models we need UIs.
 Pasta does not provide support for UI manipulation.
-UI actors have to respond to the message `initialize`, that will receive `signal` function.
+UI actors have to respond to the message `initialize`, that will receive the `signal` function.
 UIs send messages to the app through this `signal` function, whenever user interacts with it.
 
 ```javascript
@@ -202,7 +202,7 @@ Pasta is not
 
 ### object oriented ###
 
-This is very important. Pasta does not mix data and behaviours. `appActor` and `viewUpdateActor` is collections only of functions,
+This is very important. Pasta does not mix data and behaviours. `appActor` and `viewUpdateActor` are collections only of functions,
 and **the state** is a collection only of data. With Pasta, it is highly possible to create apps that do not contain a single `this` keyword.
 
 You could of course use your favourite data structure to put into the state or use OO libraries for UI manipulations, but it is not the concern of Pasta.
