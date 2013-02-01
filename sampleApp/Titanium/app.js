@@ -20,12 +20,12 @@ var __ = require('Fw');
 
   , 'page-to-page1': function (send) {
       send({page: 'page1'});}};
-  
+
 
   var updateRule = {
     notes: function (UIAPI, tempState, oldVal) {
       UIAPI.noteList.updateNotes(tempState.notes);}
-      
+
   , page: function (UIAPI, tempState, oldVal) {
       switch (oldVal) {
         case 'page1'   : UIAPI.page1.hide(); break;
@@ -33,10 +33,10 @@ var __ = require('Fw');
       switch (tempState.page) {
         case 'page1'   : UIAPI.page1.show(); break;
         case 'noteList': UIAPI.noteList.show(); break;}}};
-  
+
   var win = Ti.UI.createWindow();
 
-  Pasta.UIHandler(
+  Pasta(
     config
   , {
       noteList: require('ui/noteListView')
