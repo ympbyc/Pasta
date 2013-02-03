@@ -39,7 +39,7 @@ Hash of asynchronous functions
 ------------------------------
 
 Actors that have more than one entry-point can be expressed using the hash literal.
-This hash contains **ONLY** functions. DO NOT STORE DATA IN IT.
+This hash contains functions.
 
 An actor that respond to three messages `hello`, `how_are_you` and `bye` is defined as follows:
 

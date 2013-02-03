@@ -50,7 +50,7 @@ How it works
 
 ![How Pasta works](https://raw.github.com/ympbyc/Pasta/master/assets/img/diagram.png)
 
-NOTE: some names in the diagram is old. `appModel` is now called `appActor`, `viewUpdateRule` is now called `viewUpdateActor`.
+NOTE: some names in the diagram are old. `appModel` is now called `appActor`, `viewUpdateRule` is now called `viewUpdateActor`.
 
 Example
 -------

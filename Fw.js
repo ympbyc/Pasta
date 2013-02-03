@@ -9,7 +9,7 @@
 var Fw = (function () {
   var __ = {};
 
-  //fold :: {a:b} -> (b -> a -> c) -> c
+  //hashFold : {a:b} * c * (b * a * c -> c) -> c
   __.hashFold = function (hash, init, fn) {
     var key, last;
     last = init;
@@ -19,7 +19,7 @@ var Fw = (function () {
     return last;
   };
 
-  //fold :: (a -> b -> b) -> b -> [a] -> b
+  //fold : (a * b -> b) -> [a] -> b
   __.fold = function (fn, init) {
     return function (ls) {
       var last = init;
@@ -29,24 +29,25 @@ var Fw = (function () {
       return last;
     };
   };
-  //map :: (a -> b) -> [a] -> [b]
+  //map : (a -> b) -> [a] -> [b]
   __.map = function (fn) {
     return __.fold(function (it, last) {
       return last.concat(fn(it));
     }, []);
   };
-  //filter :: (a -> Bool) -> [a] -> [a]
+  //filter : (a -> Bool) -> [a] -> [a]
   __.filter = function (fn) {
     return __.fold(function (it, last) {
       if (fn(it)) return last.concat(it);
       return last;
     }, []);
   };
-  //remove :: a -> [a] -> [a]
+  //remove : a -> [a] -> [a]
   __.remove = function (item) {
     return __.filter(function (it) { return it !== item; });
   };
 
+  //member : a -> [a] -> Bool
   __.member = function (item) {
     return function (arr) {
       return arr.indexOf(item) > -1;
