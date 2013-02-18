@@ -32,21 +32,21 @@ var appModel = {
     });
   }
 
-, 'to-active': function (send, state) {
+, 'to-active': function (send) {
     send({
       filter: function (x) { return ! x.checked;  }
     , route: '#/active'
     });
   }
 
-, 'to-completed': function (send, state) {
+, 'to-completed': function (send) {
     send({
       filter: function (x) { return x.checked; }
     , route: '#/completed'
     });
   }
 
-, 'to-all': function (send, state) {
+, 'to-all': function (send) {
     send({
       filter: function () { return true; }
     , route: '#/'
