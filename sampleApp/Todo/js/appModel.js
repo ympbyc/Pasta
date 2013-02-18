@@ -33,7 +33,6 @@ var appModel = {
   }
 
 , 'to-active': function (send, state) {
-    if (state.route === '#/active') return;
     send({
       filter: function (x) { return ! x.checked;  }
     , route: '#/active'
@@ -41,7 +40,6 @@ var appModel = {
   }
 
 , 'to-completed': function (send, state) {
-    if (state.route === '#/completed') return;
     send({
       filter: function (x) { return x.checked; }
     , route: '#/completed'
@@ -49,7 +47,6 @@ var appModel = {
   }
 
 , 'to-all': function (send, state) {
-    if (state.route === '#/') return;
     send({
       filter: function () { return true; }
     , route: '#/'
