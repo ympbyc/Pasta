@@ -1,9 +1,15 @@
 var updateRule = {
-  id: function (UIAPI, state) {
+  id: function (UI, state) {
   }
-, todos: function (UIAPI, state) {
-    UIAPI.todoList.renderTodos(state.todos);
-    UIAPI.todoList.renderCounter(state.todos.length);
+, todos: function (UI, state) {
+    UI.todoList.renderTodos(state.todos);
+    UI.todoList.renderCounter(state.todos.length);
+  }
+, filter: function (UI, state) {
+    UI.todoList.renderTodos(state.todos.filter(state.filter));
+  }
+, route: function (UI, state, old) {
+    UI.todoList.selectLink(state.route, old);
   }
 };
 

@@ -8,15 +8,20 @@ var appModel = {
     send({
       todos: []
     , curId: 0
+    , route: location.hash
+    , filter: function (_) { return true; }
     });
   }
+
 , 'todo-add': function (send, state, memo) {
     var id = state.curId+1;
     send({curId:id, todos: state.todos.concat(TodoItem(memo, id, false))});
   }
+
 , 'todo-remove': function (send, state, id) {
-    send({todos: __.filter(function (it) { return it.id !== id })(state.todos)});
+    send({todos: __.filter(function (it) { return it.id !== id; })(state.todos)});
   }
+
 , 'todo-stat-change': function (send, state, item) {
     send({
       todos: __.map(function (it) {
@@ -26,6 +31,31 @@ var appModel = {
       })(state.todos)
     });
   }
+
+, 'to-active': function (send, state) {
+    if (state.route === '#/active') return;
+    send({
+      filter: function (x) { return ! x.checked;  }
+    , route: '#/active'
+    });
+  }
+
+, 'to-completed': function (send, state) {
+    if (state.route === '#/completed') return;
+    send({
+      filter: function (x) { return x.checked; }
+    , route: '#/completed'
+    });
+  }
+
+, 'to-all': function (send, state) {
+    if (state.route === '#/') return;
+    send({
+      filter: function () { return true; }
+    , route: '#/'
+    });
+  }
+
 };
 
 module.exports = appModel;

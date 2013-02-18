@@ -331,6 +331,47 @@ exports.extname = function(path) {
   return splitPathRe.exec(path)[3] || '';
 };
 
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
 });
 
 require.define("__browserify_process",function(require,module,exports,__dirname,__filename,process,global){var process = module.exports = {};
@@ -343,7 +384,7 @@ process.nextTick = (function () {
     ;
 
     if (canSetImmediate) {
-        return window.setImmediate;
+        return function (f) { return window.setImmediate(f) };
     }
 
     if (canPost) {
@@ -391,9 +432,18 @@ process.binding = function (name) {
 
 });
 
-require.define("/Pasta.js",function(require,module,exports,__dirname,__filename,process,global){var Pasta = (function () {
+require.define("/Pasta.js",function(require,module,exports,__dirname,__filename,process,global){/*
+ * Pasta.js
+ *
+ * Actor-based MVC framework
+ *
+ * 2013 Minori Yamashita <ympbyc@gmail.com>
+ */
+
+var Pasta = (function () {
   var __ = require('./Fw');
 
+  //Hide informations that are not necessary for appRule actor, but for execution
   var mainloopGenerator = function (config) {
     return function (api, state, ev, ev_val) {
       var kont = function (patch) { api.modifyState(patch); };
@@ -401,55 +451,72 @@ require.define("/Pasta.js",function(require,module,exports,__dirname,__filename,
     };
   };
 
+
   var UIHandler = function (appModel, UIAPI, updateRule, parentUI) {
     var self = {};       //interface to the external world
     var appState = {};   //mutable application state
     var mainloop = mainloopGenerator(appModel);
-    
+
+    //`signal` function is given to UI actors on construction time, UI actors send messages to appRule actors
+    // through this function.
+    //`signal` have to be defined here because it accesses the closed mutable value `appState`
     var signal = function (ev_name, fn) {
       return function (e) {
         var val = fn ? fn(e) : e;
         mainloop(self, appState, ev_name, val);
       };
     };
-  
+
+    //Send messages to View actor.
+    //Each message has a pattern `.changedVal (hash_of_UI_actors, copy_of_patched_appState, old_value)`
     function autoUpdate (patch) {
       var tempState = __.merge(appState, patch);
       __.hashFold(patch, null, function (change, key) {
-        if (!appState[key]) return;
         if (updateRule[key] !== undefined) updateRule[key](UIAPI, tempState, appState[key]);
       });
     }
-  
+
+    //initialize each view actors
+    //app.js should send this
     self.start = function () {
       __.hashFold(UIAPI, null, function (mdl, key) {
         if (UIAPI[key].initialize) UIAPI[key].initialize(parentUI, signal);
       });
       signal('start')();
     };
-  
+
+    //call `autoUpdate`. When done, merge the patch to the current appState
     self.modifyState = function (patch) {
       autoUpdate(patch);       //apply changes to UIs
       __._merge(appState, patch); //destructively update appState
     };
-  
+
     return self;
   };
 
-  return {
-    UIHandler: UIHandler
-  , __: __
-  };
+  //Pasta() is UIHandler
+
+  UIHandler.__ = __;
+  return UIHandler;
+
 }());
 
 module.exports = Pasta;
 
 });
 
-require.define("/Fw.js",function(require,module,exports,__dirname,__filename,process,global){var Fw = (function () {
+require.define("/Fw.js",function(require,module,exports,__dirname,__filename,process,global){/*
+ * Fw.js
+ * 
+ * 2013 Minori Yamashita <ympbyc@gmail.com>
+ *
+ * Fw.js is part of Pasta
+ */
+
+var Fw = (function () {
   var __ = {};
 
-  //fold :: {a:b} -> (b -> a -> c) -> c
+  //hashFold : {a:b} * c * (b * a * c -> c) -> c
   __.hashFold = function (hash, init, fn) {
     var key, last;
     last = init;
@@ -459,7 +526,7 @@ require.define("/Fw.js",function(require,module,exports,__dirname,__filename,pro
     return last;
   };
 
-  //fold :: (a -> b -> b) -> b -> [a] -> b
+  //fold : (a * b -> b) -> [a] -> b
   __.fold = function (fn, init) {
     return function (ls) {
       var last = init;
@@ -469,24 +536,25 @@ require.define("/Fw.js",function(require,module,exports,__dirname,__filename,pro
       return last;
     };
   };
-  //map :: (a -> b) -> [a] -> [b]
+  //map : (a -> b) -> [a] -> [b]
   __.map = function (fn) {
     return __.fold(function (it, last) {
       return last.concat(fn(it));
     }, []);
   };
-  //filter :: (a -> Bool) -> [a] -> [a]
+  //filter : (a -> Bool) -> [a] -> [a]
   __.filter = function (fn) {
     return __.fold(function (it, last) {
       if (fn(it)) return last.concat(it);
       return last;
     }, []);
   };
-  //remove :: a -> [a] -> [a]
+  //remove : a -> [a] -> [a]
   __.remove = function (item) {
     return __.filter(function (it) { return it !== item; });
   };
 
+  //member : a -> [a] -> Bool
   __.member = function (item) {
     return function (arr) {
       return arr.indexOf(item) > -1;
@@ -533,15 +601,20 @@ var appModel = {
     send({
       todos: []
     , curId: 0
+    , route: location.hash
+    , filter: function (_) { return true; }
     });
   }
+
 , 'todo-add': function (send, state, memo) {
     var id = state.curId+1;
     send({curId:id, todos: state.todos.concat(TodoItem(memo, id, false))});
   }
+
 , 'todo-remove': function (send, state, id) {
-    send({todos: __.filter(function (it) { return it.id !== id })(state.todos)});
+    send({todos: __.filter(function (it) { return it.id !== id; })(state.todos)});
   }
+
 , 'todo-stat-change': function (send, state, item) {
     send({
       todos: __.map(function (it) {
@@ -551,21 +624,35 @@ var appModel = {
       })(state.todos)
     });
   }
+
+, 'to-active': function (send, state) {
+    if (state.route === '#/active') return;
+    send({
+      filter: function (x) { return ! x.checked;  }
+    , route: '#/active'
+    });
+  }
+
+, 'to-completed': function (send, state) {
+    if (state.route === '#/completed') return;
+    send({
+      filter: function (x) { return x.checked; }
+    , route: '#/completed'
+    });
+  }
+
+, 'to-all': function (send, state) {
+    if (state.route === '#/') return;
+    send({
+      filter: function () { return true; }
+    , route: '#/'
+    });
+  }
+
 };
 
 module.exports = appModel;
-});
 
-require.define("/sampleApp/Todo/js/viewUpdateRule.js",function(require,module,exports,__dirname,__filename,process,global){var updateRule = {
-  id: function (UIAPI, state) {
-  }
-, todos: function (UIAPI, state) {
-    UIAPI.todoList.renderTodos(state.todos);
-    UIAPI.todoList.renderCounter(state.todos.length);
-  }
-};
-
-module.exports = updateRule;
 });
 
 require.define("/sampleApp/Todo/js/ui/todoList.js",function(require,module,exports,__dirname,__filename,process,global){var todoTemplate = '<li class="{{completed}}">\
@@ -589,9 +676,9 @@ exports.initialize = function (_, signal) {
 
   $('#todo-list').on('refresh', function () {
     $('.destroy').click(signal('todo-remove', function (e) {return parseInt($(e.target).attr('data-id')); }));
-    $('.toggle').click(signal('todo-stat-change', function (e) { 
+    $('.toggle').click(signal('todo-stat-change', function (e) {
       var t = $(e.target);
-      return {id: parseInt(t.attr('data-id')), checked: ! t.attr('checked')}; 
+      return {id: parseInt(t.attr('data-id')), checked: ! t.attr('checked')};
     }));
   });
 };
@@ -610,6 +697,42 @@ exports.renderTodos = function (todos) {
   }, "")(todos));
   $('#todo-list').trigger('refresh');
 };
+
+var r = {'#/':0,'#/active':1,'#/completed':2};
+
+exports.selectLink = function (route, old) {
+  $($('.route-link')[r[old]]).removeClass('selected');
+  $($('.route-link')[r[route]]).addClass('selected');
+};
+
+});
+
+require.define("/sampleApp/Todo/js/ui/cron.js",function(require,module,exports,__dirname,__filename,process,global){exports.initialize = function (_, signal) {
+  setInterval(function () {
+    var sig = {'#/':'to-all', '#/active':'to-active', '#/completed':'to-completed'}[location.hash];
+    signal(sig)();
+  }, 1000);
+};
+
+});
+
+require.define("/sampleApp/Todo/js/viewUpdateRule.js",function(require,module,exports,__dirname,__filename,process,global){var updateRule = {
+  id: function (UI, state) {
+  }
+, todos: function (UI, state) {
+    UI.todoList.renderTodos(state.todos);
+    UI.todoList.renderCounter(state.todos.length);
+  }
+, filter: function (UI, state) {
+    UI.todoList.renderTodos(state.todos.filter(state.filter));
+  }
+, route: function (UI, state, old) {
+    UI.todoList.selectLink(state.route, old);
+  }
+};
+
+module.exports = updateRule;
+
 });
 
 require.define("/sampleApp/Todo/js/app.js",function(require,module,exports,__dirname,__filename,process,global){window.Pasta = require('../../Pasta');
@@ -617,18 +740,18 @@ window.__ = Pasta.__;
 
 $(function () {
 
-  var appModel = require('./appModel');
-
-  var viewUpdateRule = require('./viewUpdateRule');
-
-  Pasta.UIHandler(
-    appModel
-  , {todoList: require('./ui/todoList')}
-  , viewUpdateRule
+  Pasta(
+    require('./appModel')
+  , {
+      todoList: require('./ui/todoList')
+    , cron: require('./ui/cron')
+    }
+  , require('./viewUpdateRule')
   , $('#todo-content')
   ).start();
 
 });
+
 });
 require("/sampleApp/Todo/js/app.js");
 })();

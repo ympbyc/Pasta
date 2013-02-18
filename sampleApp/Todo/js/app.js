@@ -3,14 +3,13 @@ window.__ = Pasta.__;
 
 $(function () {
 
-  var appModel = require('./appModel');
-
-  var viewUpdateRule = require('./viewUpdateRule');
-
   Pasta(
-    appModel
-  , {todoList: require('./ui/todoList')}
-  , viewUpdateRule
+    require('./appModel')
+  , {
+      todoList: require('./ui/todoList')
+    , cron: require('./ui/cron')
+    }
+  , require('./viewUpdateRule')
   , $('#todo-content')
   ).start();
 

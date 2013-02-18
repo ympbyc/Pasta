@@ -19,9 +19,9 @@ exports.initialize = function (_, signal) {
 
   $('#todo-list').on('refresh', function () {
     $('.destroy').click(signal('todo-remove', function (e) {return parseInt($(e.target).attr('data-id')); }));
-    $('.toggle').click(signal('todo-stat-change', function (e) { 
+    $('.toggle').click(signal('todo-stat-change', function (e) {
       var t = $(e.target);
-      return {id: parseInt(t.attr('data-id')), checked: ! t.attr('checked')}; 
+      return {id: parseInt(t.attr('data-id')), checked: ! t.attr('checked')};
     }));
   });
 };
@@ -39,4 +39,11 @@ exports.renderTodos = function (todos) {
     return str + __.template(todoTemplate, item);
   }, "")(todos));
   $('#todo-list').trigger('refresh');
+};
+
+var r = {'#/':0,'#/active':1,'#/completed':2};
+
+exports.selectLink = function (route, old) {
+  $($('.route-link')[r[old]]).removeClass('selected');
+  $($('.route-link')[r[route]]).addClass('selected');
 };
