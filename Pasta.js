@@ -10,10 +10,10 @@ var Pasta = (function () {
   var __ = require('./Fw');
 
   //Hide informations that are not necessary for appRule actor, but for execution
-  var mainloopGenerator = function (config) {
-    return function (api, state, ev, ev_val) {
+  var mainloopGenerator = function (config, api, signal) {
+    return function (state, ev, ev_val) {
       var kont = function (patch) { api.modifyState(patch); };
-      config[ev](kont, state, ev_val);
+      config[ev](kont, state, ev_val, signal);
     };
   };
 
@@ -21,15 +21,15 @@ var Pasta = (function () {
   var UIHandler = function (appModel, UIAPI, updateRule, parentUI) {
     var self = {};       //interface to the external world
     var appState = {};   //mutable application state
-    var mainloop = mainloopGenerator(appModel);
+    var mainloop = mainloopGenerator(appModel, self, signal);
 
     //`signal` function is given to UI actors on construction time, UI actors send messages to appRule actors
     // through this function.
     //`signal` have to be defined here because it accesses the closed mutable value `appState`
-    var signal = function (ev_name, fn) {
+    function signal (ev_name, fn) {
       return function (e) {
         var val = fn ? fn(e) : e;
-        mainloop(self, appState, ev_name, val);
+        mainloop(appState, ev_name, val);
       };
     };
 
