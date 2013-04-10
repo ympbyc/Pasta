@@ -114,8 +114,9 @@ var viewUpdateActor = {
 };
 ```
 
-<span style="font-weight:bold; font-size:1.8em; color:red">WARNING THIS FEATURE IS DEPRECATED SINCE 2013/04/10 AND IS LIKELY TO BE REMOVED SOON.
-Get access to the signal function from the returned object of Pasta()</span>
+-------------------------------------------------------------
+
+**WARNING THIS FEATURE IS DEPRECATED SINCE 2013/04/10 AND IS LIKELY TO BE REMOVED SOON. Get access to the signal function from the returned object of Pasta()**
 
 To show the models we need UIs.
 Pasta does not provide support for UI manipulation.
@@ -150,6 +151,8 @@ UIs send messages to the app through this `signal` function, whenever user inter
   return self;
 }())
 ```
+
+----------------------------------------------------------------------
 
 Finally, we kick things off in app.js
 
