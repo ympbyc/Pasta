@@ -56,35 +56,39 @@ Example
 -------
 
 First, we create the `appActor` that maps signals to patches.
-Functions in the actor can receive three arguments. `send`: a function which you give the patch to, `state`: a hash representing the current state of the app and `data`: any object that was passed with the signal.
+Functions in the actor can receive three arguments. `state`: a hash representing the current state of the app and `data`: any object that was passed with the signal, and `signal`.
 
 ```javascript
 var appActor = {
-  'start': function (send) {
+  'start': function () {
     //initial state
-    send({
+    return {
       page:'top'
     , notes:[]
-    });
+    };
   }
-, 'add-note': function (send, state, memo) {
-    send({
+, 'add-note': function (state, memo) {
+    return {
       notes: state.notes.concat({memo: memo})
-    });
+    };
   }
-, 'fetch-notes-from-server': function (send, state) {
-    //send is a continuation-actor so we can perform async operations here
+, 'fetch-notes-from-server': function (state, _, signal) {
+    //async operations
     httpRequest({
       url: '...'
     , type: 'GET'
     , success: function (j) {
-        send({notes: j});
+        signal("fetch-complete")(j);
     }});
+    return {};
   }
-, 'switch-page-to-top': function (send) {
-    send({
+, 'fetch-complete': function (_, data) {
+    return {notes: data}
+  }
+, 'switch-page-to-top': function () {
+    return {
       page: 'topPage'
-    });
+    };
   }
   //......
 };
@@ -192,7 +196,7 @@ For example: `appActor` is a hash of functions, not a class, forbidding to have 
 
 Here are some more restlictions:
 + No actor can directly mutate the `appState`,
-+ `appActor` and `viewUpdateActor`, UI actors and `appActor` can not message eachother directly, it has to be done through `signal` and `send` respectively.
++ `appActor` and `viewUpdateActor`, UI actors and `appActor` can not message eachother directly, it has to be done through `signal` and by returning a patch from appActors respectively.
 
 ### capable of handling meta-applications ###
 
@@ -224,12 +228,12 @@ Here goes a crazy tip: you can persist **the state** into **the state** itself! 
 
 ```javascript
 var appActor = {
-  'saveHistory': function (send, state) {
-    send({previousState: __.merge({}, state)});
+  'saveHistory': function (state) {
+    return {previousState: __.merge({}, state)};
   }
-, 'back-to-the-future': function (send, state) {
+, 'back-to-the-future': function (state) {
     //go back 2 steps
-    send(state.previousState.previousState);
+    return state.previousState.previousState;
   }
 };
 ```

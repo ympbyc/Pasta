@@ -13,7 +13,7 @@ var Pasta = (function () {
   var mainloopGenerator = function (config, api, signal) {
     return function (state, ev, ev_val) {
       var kont = function (patch) { api.modifyState(patch); };
-      config[ev](kont, state, ev_val, signal);
+      kont(config[ev](state, ev_val, signal)); //no longer passes `send`
     };
   };
 
