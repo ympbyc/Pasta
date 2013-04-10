@@ -18,9 +18,9 @@ var Pasta = (function () {
   };
 
 
-  var UIHandler = function (appModel, UIAPI, updateRule, parentUI) {
+  var UIHandler = function (appModel, UIAPI, updateRule, parentUI, initState) {
     var self = {};       //interface to the external world
-    var appState = {};   //mutable application state
+    var appState = initState || {};   //mutable application state
     var mainloop = mainloopGenerator(appModel, self, signal);
 
     //`signal` function is given to UI actors on construction time, UI actors send messages to appRule actors
