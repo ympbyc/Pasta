@@ -1,6 +1,6 @@
 /*
  * Fw.js
- * 
+ *
  * 2013 Minori Yamashita <ympbyc@gmail.com>
  *
  * Fw.js is part of Pasta
@@ -80,4 +80,5 @@ var Fw = (function () {
   return __;
 }());
 
-module.exports = Fw;
+if (typeof module !== "undefined") module.exports = Fw;
+else this.Fw = Fw;

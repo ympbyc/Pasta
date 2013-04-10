@@ -7,7 +7,7 @@
  */
 
 var Pasta = (function () {
-  var __ = require('./Fw');
+  var __ = Fw || require('./Fw');
 
   //Hide informations that are not necessary for appRule actor, but for execution
   var mainloopGenerator = function (config, api, signal) {
@@ -73,4 +73,5 @@ var Pasta = (function () {
 
 }());
 
-module.exports = Pasta;
+if (typeof module !== "undefined") module.exports = Pasta;
+else this.Pasta = Pasta;
