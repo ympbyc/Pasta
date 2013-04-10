@@ -56,7 +56,7 @@ Example
 -------
 
 First, we create the `appActor` that maps signals to patches.
-Functions in the actor can receive four arguments: `send` function which you give the patch to, `state` a hash representing the current state of the app, `data` any object that was passed with the signal, `signal` a function to fire another signal.
+Functions in the actor can receive three arguments. `send`: a function which you give the patch to, `state`: a hash representing the current state of the app and `data`: any object that was passed with the signal.
 
 ```javascript
 var appActor = {
@@ -113,6 +113,9 @@ var viewUpdateActor = {
 //.......
 };
 ```
+
+<span style="font-weight:bold; font-size:1.8em; color:red">WARNING THIS FEATURE IS DEPRECATED SINCE 2013/04/10 AND IS LIKELY TO BE REMOVED SOON.
+Get access to the signal function from the returned object of Pasta()</span>
 
 To show the models we need UIs.
 Pasta does not provide support for UI manipulation.
