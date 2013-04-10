@@ -56,6 +56,7 @@ Example
 -------
 
 First, we create the `appActor` that maps signals to patches.
+Functions in the actor can receive four arguments: `send` function which you give the patch to, `state` a hash representing the current state of the app, `data` any object that was passed with the signal, `signal` a function to fire another signal.
 
 ```javascript
 var appActor = {
