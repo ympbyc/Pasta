@@ -229,7 +229,7 @@ Here goes a crazy tip: you can persist **the state** into **the state** itself! 
 ```javascript
 var appActor = {
   'saveHistory': function (state) {
-    return {previousState: __.merge({}, state)};
+    return {previousState: state};
   }
 , 'back-to-the-future': function (state) {
     //go back 2 steps
