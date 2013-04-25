@@ -29,7 +29,9 @@ var Pasta = (function () {
     function signal (ev_name, fn) {
       return function (e) {
         var val = fn ? fn(e) : e;
-        mainloop(appState, ev_name, val);
+        setTimeout(function () {
+            mainloop(appState, ev_name, val);
+        }, 0);
       };
     };
 
