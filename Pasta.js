@@ -17,7 +17,7 @@ var Pasta = (function () {
   };
 
 
-  var UIHandler = function (appModel, UIAPI, updateRule, parentUI, initState) {
+  var UIHandler = function (appModel, UIAPI, updateRule, initState) {
     var self = {};       //interface to the external world
     var appState = initState || {};   //mutable application state
     var mainloop = mainloopGenerator(appModel, self, signal);
