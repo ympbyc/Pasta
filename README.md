@@ -55,24 +55,24 @@ MVC
 
 Pasta manages one big plain hashtable to maintain its state. Pasta applications proceed by changing this hashtable and react to that change.
 
-An example data would be something like this.
+An example data would look something like this.
 
 ```javascript
 var appData = {
-  user: {id:1234, name:'Sam'},
+  user:    {id:1234, name:'Sam'},
   friends: [{name:'Mike'}, {name:'Tom'}],
-  notes: [{id:12, text:'hello'}],
+  notes:   [{id:12, text:'hello'}],
   editing: {text: 'i am typin'}
 };
 ```
 
-Because it is an ordinary JavaScript object, you can store it basically anywhere. Imagine sending the running application state to a server in JSON format and resume from there whenever you get back.
+Because it is an ordinary JavaScript object, you can store it basically anywhere. Imagine sending the running application state to your server in JSON format and resume from there whenever you get back.
 
 ### Model
 
-The model is one big hashtable of functions. Each function receives the state, whatever a data user has chosen, and a reference to `Pasta#signal` function which we will come back to later.
+The model is one big hashtable of functions. Each function receives the state, whatever a data user has sent, and a reference to `Pasta#signal` function which we will come back to later.
 
-The model is responsible for modifying the state although it is not allowed to directly touch it. Each function is the model returns a hashtable that will get merged by Pasta.
+The model is responsible for modifying the state although it is not allowed to directly touch it. Each function in the model returns a patch hashtable that will get merged to the state by Pasta.
 
 ```javascript
 var Model = _.module(
@@ -134,7 +134,7 @@ var View = _.module(
   },
 
   //this gets called whenever the `notes` field in the state changes
-  funciton notes (UI, state) {
+  function notes (UI, state) {
     UI.render_notes_list(state.notes);
   }
 );
@@ -143,9 +143,10 @@ var View = _.module(
 
 ### Controller
 
-A controller is whatever that *signal*s. Instances of Pasta has a method called `signal`. You tipically call this method when user interacts with the UI, such as clicking on a button or typing in his/her name to a textfield. One signal invokes one of the functions defined in the model module.
+A controller is whatever that *signal* s. Instances of Pasta has a method called `signal`. You tipically call this method when user interacts with the UI, such as clicking on a button or typing in his/her name to a text field. One signal invokes one of the functions defined in the model module.
 
 ```javascript
+//invokes Model.edit_name
 $("button").click(pasta.signal("edit_name", function (ev) {
   return "Dave";
 }));
