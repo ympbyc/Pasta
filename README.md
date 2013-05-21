@@ -1,7 +1,9 @@
 Pasta
 =====
 
-**Actor-based MVC Framework**
+**Mostly Functional MVC Framework**
+
+2012 Minori Yamashita <ympbyc@gmail.com>
 
 ```
  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.
@@ -17,147 +19,151 @@ Pasta
  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
 ```
 
-Pasta is an extremely lightweight (71 lines - uncompressed) Actor-based application framework for JavaScript. Pasta is designed to work best with non-browser platforms such as Titanium mobile but can easily be adapted for browsers, too.
+Pasta is an extremely lightweight (65 lines - uncompressed) function oriented MVC framework for JavaScript.
 
-If you are not familiar with the term **actor**, I suggest you read [ympbyc/Pasta/docs/actorsInJs.md](https://github.com/ympbyc/Pasta/blob/master/docs/actorsInJs.md).
+Dependencies
+------------
 
-**This README is hugely outdated**
+Underscore, Underscore-fix
 
-Features
---------
 
-### The State ###
+API
+---
 
-Every application built with Pasta has a single model that holds all the sub-models that are passed around between actors as a READONLY object. We call it **the state**.
-Pasta programs are referencially transparent about **the state**, meaning it is guaranteed the state maps one-to-one to the view.
-Allowing apps to hibernate and respring.
+### Pasta
 
-### The Actors ###
+Pasta takes all it needs to setup an application for you and returns an instance of pasta.
 
-Unlike other frameworks, Pasta source does not contain classes.
-Instead they are made up of actors: an **appActor**, an **viewUpdateActor** and several **UI actors**. Each actor contains many smaller actors inside it.
-`Pasta` function takes these three kinds of actors and connects them to form one application.
+```javascript
+Pasta(Model, UI, View, initialData); //=> a Pasta
+```
 
-Each of the actors named above are given access to only a limited range of objects, making it impossible to breach the Presentation-Domain-Separation concept.
+### Pasta#signal
 
-### Functional ###
+Pasta#signal returs a function that will call a function in your model with the data.
 
-Pasta is an attempt to do GUI programming in a functional way, yet easy enough to learn.
+```javascript
+$("button").click(pasta.signal("some_function_name", function (ev) {
+  return "data";
+}));
+```
 
-Pasta works best with underscore.js and underscore-fix.js.
+MVC
+---
+
+### State
+
+Pasta manages one big plain hashtable to maintain its state. Pasta applications proceed by changing this hashtable and react to that change.
+
+An example data would be something like this.
+
+```javascript
+var appData = {
+  user: {id:1234, name:'Sam'},
+  friends: [{name:'Mike'}, {name:'Tom'}],
+  notes: [{id:12, text:'hello'}],
+  editing: {text: 'i am typin'}
+};
+```
+
+Because it is an ordinary JavaScript object, you can store it basically anywhere. Imagine sending the running application state to a server in JSON format and resume from there whenever you get back.
+
+### Model
+
+The model is one big hashtable of functions. Each function receives the state, whatever a data user has chosen, and a reference to `Pasta#signal` function which we will come back to later.
+
+The model is responsible for modifying the state although it is not allowed to directly touch it. Each function is the model returns a hashtable that will get merged by Pasta.
+
+```javascript
+var Model = _.module(
+  {},
+
+  function edit_name (state, new_name) {
+    return {user: _.assoc(state.user, 'name', new_name)};
+  },
+
+  function add_note (state, note, signal) {
+    $.post('/notes', note, signal("note_added"), 'json');
+    return {};
+  },
+
+  function note_added (state, result, signal) {
+    return {notes: state.notes.concat(result)};
+  }
+);
+```
+
+More on the `signal` later.
+
+Note: the code above doesn't run on IE. You could just use a plain hashtable instead of relying on `_.module` if you need to support IE.
+
+### UI
+
+The UI is one big hashtable of functions. The UI is not really a part of Pasta but it's there just for convenience. You can put UI manipulation helpers in this module.
+
+```javascript
+var UI = _.module(
+  {},
+
+  function change_name (name) {
+    $(".user-name").text(name);
+  },
+
+  function render_notes_list (notes) {
+    _.each(notes, function (n) {
+      //...
+    });
+  }
+);
+```
+
+### View
+
+The view is one big hashtable of functions. Each function receives the UI module, the current state, and the old value of the field the function is responsible for. The role of the view is to reflect the changes made to the state to the actual UI.
+
+```javascript
+var View = _.module(
+  {},
+
+  //this gets called whenever the `user` field in the state changes
+  function user (UI, state, oldVal) {
+    if (state.user.name !== oldVal.name) {
+      alert('Bye ' + oldVal.name '. Hello ' + state.user.name + '.');
+      UI.change_name(state.user.name);
+    }
+  },
+
+  //this gets called whenever the `notes` field in the state changes
+  funciton notes (UI, state) {
+    UI.render_notes_list(state.notes);
+  }
+);
+```
+
+
+### Controller
+
+A controller is whatever that *signal*s. Instances of Pasta has a method called `signal`. You tipically call this method when user interacts with the UI, such as clicking on a button or typing in his/her name to a textfield. One signal invokes one of the functions defined in the model module.
+
+```javascript
+$("button").click(pasta.signal("edit_name", function (ev) {
+  return "Dave";
+}));
+```
+
+Example
+-------
+
+Unavailable for now. Please see tests/tests.js to get a hang of it.
+
 
 How it works
 ------------
 
 ![How Pasta works](https://raw.github.com/ympbyc/Pasta/master/assets/img/diagram.png)
 
-NOTE: some names in the diagram are old. `appModel` is now called `appActor`, `viewUpdateRule` is now called `viewUpdateActor`.
-
-Example
--------
-
-First, we create the `appActor` that maps signals to patches.
-Functions in the actor can receive three arguments. `state`: a hash representing the current state of the app and `data`: any object that was passed with the signal, and `signal`.
-
-```javascript
-var appActor = {
-  'start': function () {
-    //initial state
-    return {
-      page:'top'
-    , notes:[]
-    };
-  }
-, 'add-note': function (state, memo) {
-    return {
-      notes: state.notes.concat({memo: memo})
-    };
-  }
-, 'fetch-notes-from-server': function (state, _, signal) {
-    //async operations
-    httpRequest({
-      url: '...'
-    , type: 'GET'
-    , success: function (j) {
-        signal("fetch-complete")(j);
-    }});
-    return {};
-  }
-, 'fetch-complete': function (_, data) {
-    return {notes: data}
-  }
-, 'switch-page-to-top': function () {
-    return {
-      page: 'topPage'
-    };
-  }
-  //......
-};
-```
-
-Next we create the `viewUpdateActor`.
- `viewUpdateActor` maps the change in state to UIs.
-
-```javascript
-var viewUpdateActor = {
-  //UI is a hash of UI actors, state is the next state//
-  notes: function (UI, state) {
-    UI.notesPage.updateNoteList(state.notes);
-  }
-, page:  function (UI, state, oldVal) {
-    //hide current page and show the new page
-    switch (oldVal) {
-      case 'topPage': UI.topView.hide(); break;
-      case 'notesPage': UI.notesPage.hide(); break;
-    }
-    switch (state.page) {
-      case 'topPage': UI.topView.show(); break;
-      case 'notesPage': UI.notesPage.show(); break;
-    }
-  }
-//.......
-};
-```
-
-Finally, we kick things off in app.js
-
-```javascript
-var Pasta = require('Pasta');
-var __ = Pasta.__;
-
-(function () {
-
-  var win = X.X.createWindow(); //the `parent` object passed to each UI's `initialize`
-
-  Pasta(
-    require('appActor')                  //appActor
-  , {                                    //UI actors
-     notesPage: require('./notesPage')
-     topPage: ...
-    }
-  , require('viewUpdateActor')           //viewUpdateActor
-  , win                                  //parent
-  ).start();
-
-  win.open();
-
-}());
-```
-
 Pasta is
 --------
-
-### a jail ###
-
-MVC, from its origin (Smalltalk), is deeply associated with object-oriented programming.
-Typical MVC framework provides base classes Model, View and Controller for us to inherit.
-This approach however, gives too much freedom to us and often we end up violating the PDS concept.
-Pasta avoids this problem by putting us inside a cage where we are given access to only a limited range of information and objects that Pasta chooses.
-For example: `appActor` is a hash of functions, not a class, forbidding to have a local state to share among other functions thus functions in the hash can only use what Pasta gives to it as arguments.
-
-Here are some more restlictions:
-+ No actor can directly mutate the `appState`,
-+ `appActor` and `viewUpdateActor`, UI actors and `appActor` can not message eachother directly, it has to be done through `signal` and by returning a patch from appActors respectively.
 
 ### capable of handling meta-applications ###
 
@@ -174,8 +180,8 @@ Pasta is not
 
 ### object oriented ###
 
-This is very important. Pasta does not mix data and behaviours. `appActor` and `viewUpdateActor` are collections only of functions,
-and **the state** is a collection only of data. With Pasta, it is highly possible to create apps that do not contain a single `this` keyword.
+This is very important. Pasta does not mix data and behaviours. models and views are collections only of functions,
+and the state is a collection only of data. With Pasta, it is highly possible to create apps that do not contain a single `this` keyword.
 
 You could of course use your favourite data structure to put into the state or use OO libraries for UI manipulations, but it is not the concern of Pasta.
 
@@ -183,9 +189,9 @@ You could of course use your favourite data structure to put into the state or u
 Tips
 ----
 
-**The state** can be persisted into localstorage, remote server or anywhere you can think of. Just serialize it into JSON and save.
+The state of a Pasta app can be persisted into localstorage, remote server or anywhere you can think of. Just serialize it into JSON and save.
 
-Here goes a crazy tip: you can persist **the state** into **the state** itself! If you know what I mean...
+Here goes a crazy tip: you can save the state into the state itself! If you know what I mean...
 
 ```javascript
 var appActor = {
@@ -202,9 +208,7 @@ var appActor = {
 ![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.jpg)
 
 
-Licence and stuff
------------------
+Misc
+----
 
-Pasta is licenced under MIT licence
-
-Use it on your own responsibility.
+Pasta is licensed under MIT licence

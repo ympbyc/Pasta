@@ -1,74 +1,56 @@
-var __ = Fw;
+var se = strictEqual;
 
-test("hashFold", function () {
-  strictEqual(__.hashFold({a:1,b:2,c:3}, 0, function (it, key, last) {
-    return it + last;
-  }), 6, "addition");
+module("pasta");
 
-  deepEqual(__.hashFold({a:1,b:2,c:3}, {}, function (it, key, last) {
-    last[key] = it;
-    return last;
-  }), {a:1,b:2,c:3}, "copy");
+var Model = _.module(
+    {},
 
-  deepEqual(__.hashFold({a:1,b:2,c:3}, [], function (it, key, last) {
-    return last.concat(key);
-  }), ['a', 'b', 'c'], "key sequence");
+    function change_name (state, data, signal) {
+        test("model", function () {
+            se(state.user.age, 19, "State has the right value");
+            se(data, "Dave", "date is passed as the second argument");
+            se(typeof signal, "function", "signal is passed as the third argument");
+        });
+        return {user: _.assoc(state.user, 'name', data)};
+    }
+);
+
+var UI = _.module(
+    {},
+
+    function change_name (name) {
+        test("UI", function () {
+            se(name, "Dave", "ok");
+        });
+    }
+);
+
+var View = _.module(
+    {},
+
+    function user (UI, state, oldVal) {
+        test("view", function () {
+            se(state.user.name, "Dave", "The change properly propagated to the view");
+            se(typeof UI.change_name, "function", "UI module is passed in");
+            se(oldVal.name, "Dan", "old value is passed in");
+        });
+    }
+);
+
+var initialState = {
+    user: {name: "Dan", age: 19}
+};
+
+var pasta = Pasta(Model, UI, View, initialState);
+
+test("Pasta", function () {
+    se(typeof pasta.signal, "function", "Pasta exports signal");
 });
 
-test("fold", function () {
-  strictEqual(__.fold(function (it, last) {
-    return it + last;
-  }, 0)([1,2,3]), 6, "addition");
+pasta.signal("change_name", function (e) {
+    test("signal", function () {
+        se(e.val, "Dave", "The function has access to event object");
+    });
 
-  deepEqual(__.fold(function (it, last) {
-    return last.concat(it);
-  }, [])([1,2,3]), [1,2,3], "copy");
-
-  deepEqual(__.fold(function (it, last) {
-    return [it].concat(last);
-  }, [])([1,2,3]), [3,2,1], "reverse");
-});
-
-test("map", function () {
-  deepEqual(__.map(function (it) {
-    return it * it;
-  })([1,2,3]), [1,4,9], "square");
-});
-
-test("filter", function () {
-  deepEqual(__.filter(function (it) {
-    return it % 2 === 0;
-  })([1,2,3,4,5,6,7,8,9,10]), [2,4,6,8,10], "even");
-
-  deepEqual(__.filter(function (it) {
-    return it > 3;
-  })([1,2,3,4,5,6]), [4,5,6], "greater than");
-});
-
-test("remove", function () {
-  deepEqual(__.remove(3)([1,2,3,4,5]), [1,2,4,5], "simple");
-  deepEqual(__.remove({a:1})([{a:1},{a:2}]), [{a:1},{a:2}], "strict equal");
-});
-
-test("member", function () {
-  strictEqual(__.member(3)([1,2,3,4,5]), true, "simple true");
-  strictEqual(__.member(6)([1,2,3,4,5]), false, "simple false");
-  strictEqual(__.member({a:1})([{a:1}]), false, "strict equal");
-});
-
-test("_merge", function () {
-  var x = {a:1,b:2};
-  __._merge(x, {c:3,d:4});
-  deepEqual(x, {a:1,b:2,c:3,d:4}, "destructive merge");
-});
-
-test("merge", function () {
-  deepEqual(__.merge({a:1,b:2}, {c:3,d:4}), {a:1,b:2,c:3,d:4}, "merge");
-  var x = {a:1,b:2};
-  __.merge(x, {c:3,d:4});
-  deepEqual(x, {a:1,b:2}, "pure merge does not affect the original");
-});
-
-test("template", function () {
-  strictEqual(__.template("<h1>{{name}}</h1><p>{{txt}}</p>", {name:"Foo", txt:"hello"}), "<h1>Foo</h1><p>hello</p>", "html");
-});
+    return e.val;
+})({val: "Dave"});
