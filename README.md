@@ -21,6 +21,8 @@ Pasta is an extremely lightweight (71 lines - uncompressed) Actor-based applicat
 
 If you are not familiar with the term **actor**, I suggest you read [ympbyc/Pasta/docs/actorsInJs.md](https://github.com/ympbyc/Pasta/blob/master/docs/actorsInJs.md).
 
+**This README is hugely outdated**
+
 Features
 --------
 
@@ -42,8 +44,7 @@ Each of the actors named above are given access to only a limited range of objec
 
 Pasta is an attempt to do GUI programming in a functional way, yet easy enough to learn.
 
-`Pasta.__` provides some basic enumerable functions that are convinient when working with collection type models.
-If `Pasta.__` does not suffice your needs, checkout underscore.js.
+Pasta works best with underscore.js and underscore-fix.js.
 
 How it works
 ------------
@@ -117,46 +118,6 @@ var viewUpdateActor = {
 //.......
 };
 ```
-
--------------------------------------------------------------
-
-**WARNING THIS FEATURE IS DEPRECATED SINCE 2013/04/10 AND IS LIKELY TO BE REMOVED SOON. Get access to the signal function from the returned object of Pasta()**
-
-To show the models we need UIs.
-Pasta does not provide support for UI manipulation.
-UI actors have to respond to the message `initialize`, that will receive the `signal` function.
-UIs send messages to the app through this `signal` function, whenever user interacts with it.
-
-```javascript
-//notesPage.js
-(function () {
-  var self = {};
-
-  var mainView;
-
-  //If `initialize` function is defined, it gets called with the pointer to parent element and the `signal` function
-  self.initialize = function (parent, signal) {
-    mainView = add(parent, X.X.createView());
-    var textField = add(mainView, X.X.createTextField());
-
-    mainView.hide();
-
-    //when text is entered, signal 'add-note'
-    textField.addEventListener('return', signal('add-note', function (e) { return e.source.value; }));
-  };
-  self.updateNoteList = function (notes) {
-    notes.forEach(function (note) {
-      add(mainView, X.X.createLabel({text: note.memo}));
-    });
-  };
-  self.show = ...
-  self.hide = ...
-
-  return self;
-}())
-```
-
-----------------------------------------------------------------------
 
 Finally, we kick things off in app.js
 
