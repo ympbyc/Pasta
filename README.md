@@ -147,7 +147,7 @@ When you have prepared your model, ui and the view, it's time to feed them all t
 
 ### Controller
 
-A controller is whatever that calls the `signal`. You tipically call this function when user interacts with the UI, such as clicking on a button or typing in his/her name to a text field. One signal invokes one of the functions defined in the model module.
+A controller is whatever that calls `signal`. You tipically call this function when user interacts with the UI, such as clicking on a button or typing in his/her name to a text field. One signal invokes one of the functions defined in the model module.
 
 ```javascript
 //invokes Model.edit_name
@@ -155,11 +155,6 @@ $("button").click(signal("edit_name", function (ev) {
   return "Dave";
 }));
 ```
-
-Example
--------
-
-Unavailable for now. Please see tests/tests.js to get a hang of it.
 
 
 How it works
