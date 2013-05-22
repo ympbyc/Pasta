@@ -8,7 +8,7 @@
 
 var tech_news_json = "http://pipes.yahoo.com/pipes/pipe.run?_id=7eaefd6f25d7c11fd00c7c78b0628882&_render=json";
 
-var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=213eb08dc23f14e7e43b55dbb1f4e272&format=json&nojsoncallback=1";
+var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=YOUR_API_KEY&format=json&nojsoncallback=1";
 
 //var tsu_json = "http://133.242.154.120:3000/api/tab/tab_main/20/0";
 
