@@ -30,7 +30,7 @@ Underscore, Underscore-fix
 API
 ---
 
-### Pasta
+### Pasta/4
 
 Pasta takes all it needs to setup an application for you and returns an instance of pasta.
 
@@ -38,9 +38,9 @@ Pasta takes all it needs to setup an application for you and returns an instance
 Pasta(Model, UI, View, initialData); //=> a Pasta
 ```
 
-### Pasta#signal
+### signal/1, signal/2
 
-Pasta#signal returs a function that will call a function in your model with the data.
+`Pasta()` produces a function named `signal`. `signal()` produces a function that will call a function in your model.
 
 ```javascript
 $("button").click(pasta.signal("some_function_name", function (ev) {
@@ -140,14 +140,18 @@ var View = _.module(
 );
 ```
 
+### Application
+
+When you have prepared your model, ui and the view, it's time to feed them all to Pasta. The function `Pasta` will wire the modules to generate your application. Pasta function produces a function named `signal` which you might want to bind to a variable for later use.
+
 
 ### Controller
 
-A controller is whatever that *signal* s. Instances of Pasta has a method called `signal`. You tipically call this method when user interacts with the UI, such as clicking on a button or typing in his/her name to a text field. One signal invokes one of the functions defined in the model module.
+A controller is whatever that calls the `signal`. You tipically call this function when user interacts with the UI, such as clicking on a button or typing in his/her name to a text field. One signal invokes one of the functions defined in the model module.
 
 ```javascript
 //invokes Model.edit_name
-$("button").click(pasta.signal("edit_name", function (ev) {
+$("button").click(signal("edit_name", function (ev) {
   return "Dave";
 }));
 ```
@@ -195,15 +199,18 @@ The state of a Pasta app can be persisted into localstorage, remote server or an
 Here goes a crazy tip: you can save the state into the state itself! If you know what I mean...
 
 ```javascript
-var appActor = {
-  'saveHistory': function (state) {
+var Model = _.module(
+  {},
+
+  function save_history (state) {
     return {previousState: state};
-  }
-, 'back-to-the-future': function (state) {
+  },
+
+  function back-to-the-future (state) {
     //go back 2 steps
     return state.previousState.previousState;
   }
-};
+);
 ```
 
 ![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.jpg)

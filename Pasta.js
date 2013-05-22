@@ -8,22 +8,20 @@
 
 var Pasta = (function () {
 
-  //Hide informations that are not necessary for appRule actor, but for execution
-  var mainloopGenerator = function (config, api, signal) {
+  //Hide informations that are not necessary for the model, but for execution
+  var mainloopGenerator = function (config, modifyState, signal) {
     return function (state, ev, ev_val) {
-      var kont = function (patch) { api.modifyState(patch); };
+      var kont = function (patch) { modifyState(patch); };
       kont(config[ev](state, ev_val, signal)); //no longer passes `send`
     };
   };
 
 
-  var UIHandler = function (appModel, UIAPI, updateRule, initState) {
+  var Pasta = function (appModel, UIAPI, updateRule, initState) {
     var self = {};       //interface to the external world
     var appState = initState || {};   //mutable application state
-    var mainloop = mainloopGenerator(appModel, self, signal);
+    var mainloop = mainloopGenerator(appModel, modifyState, signal);
 
-    //`signal` function is given to UI actors on construction time, UI actors send messages to appRule actors
-    // through this function.
     //`signal` have to be defined here because it accesses the closed mutable value `appState`
     function signal (ev_name, fn) {
       return function (e) {
@@ -34,8 +32,7 @@ var Pasta = (function () {
       };
     };
 
-    //Send messages to View actor.
-    //Each message has a pattern `.changedVal (hash_of_UI_actors, copy_of_patched_appState, old_value)`
+    //Call appropriate functions of the view
     function autoUpdate (patch) {
       var tempState = _.merge(appState, patch);
       _.foldl(patch, function (acc, change, key) {
@@ -44,20 +41,15 @@ var Pasta = (function () {
     }
 
     //call `autoUpdate`. When done, merge the patch to the current appState
-    self.modifyState = function (patch) {
+    function modifyState (patch) {
       autoUpdate(patch);         //apply changes to UIs
       _.extend(appState, patch); //destructively update appState
     };
 
-    //since 2013/4/10
-    //expose signal
-    self.signal = signal;
-
-    return self;
+    return signal;
   };
 
-  //Pasta() is UIHandler
-  return UIHandler;
+  return Pasta;
 
 }());
 

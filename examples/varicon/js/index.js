@@ -138,14 +138,14 @@ function main (news) {
     };
 
 
-    var pasta = Pasta(Model, UI, View, initial_state);
+    var pasta_signal = Pasta(Model, UI, View, initial_state);
 
-    pasta.signal('start_news_timer')();
-    pasta.signal('start_slide_timer')();
+    pasta_signal('start_news_timer')();
+    pasta_signal('start_slide_timer')();
 
     /* Controllers */
-    $("#news-wrap").hover(pasta.signal('stop_news_timer'),
-                          pasta.signal('start_news_timer'));
+    $("#news-wrap").hover(pasta_signal('stop_news_timer'),
+                          pasta_signal('start_news_timer'));
 
     $("#news-wrap").mousewheel(function (e, delta) {
         var $nc = $("#news-content");
@@ -154,14 +154,14 @@ function main (news) {
 
 
 
-    $(".draggable").on("mousedown", pasta.signal('drag_start', function (e) {
+    $(".draggable").on("mousedown", pasta_signal('drag_start', function (e) {
         var t = e.currentTarget;
         return $(t);
     }));
 
-    $("body").on("mouseup", pasta.signal('drag_end'));
+    $("body").on("mouseup", pasta_signal('drag_end'));
 
-    $("body").on("mousemove", pasta.signal('mouse_move', function (e) {
+    $("body").on("mousemove", pasta_signal('mouse_move', function (e) {
         return {x: e.clientX - 50, y: e.clientY - 5};
     }));
 

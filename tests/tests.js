@@ -41,13 +41,13 @@ var initialState = {
     user: {name: "Dan", age: 19}
 };
 
-var pasta = Pasta(Model, UI, View, initialState);
+var signal = Pasta(Model, UI, View, initialState);
 
 test("Pasta", function () {
-    se(typeof pasta.signal, "function", "Pasta exports signal");
+    se(typeof signal, "function", "Pasta exports signal");
 });
 
-pasta.signal("change_name", function (e) {
+signal("change_name", function (e) {
     test("signal", function () {
         se(e.val, "Dave", "The function has access to event object");
     });
