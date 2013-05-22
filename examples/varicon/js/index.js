@@ -8,29 +8,27 @@
 
 var tech_news_json = "http://pipes.yahoo.com/pipes/pipe.run?_id=7eaefd6f25d7c11fd00c7c78b0628882&_render=json";
 
+var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=213eb08dc23f14e7e43b55dbb1f4e272&format=json&nojsoncallback=1";
+
 //var tsu_json = "http://133.242.154.120:3000/api/tab/tab_main/20/0";
 
 
 $(function () {
     $.getJSON(tech_news_json, function (j) {
-        main(j/*.data*/ .value.items);
+        getFlickr(_.partial(main, j.value.items));
     });
 });
 
-function main (news) {
+function getFlickr (f) {
+    $.getJSON(flickr_recent, function (j) {
+        f(j.photos.photo);
+    });
+}
+
+function main (news, slides) {
     "use strict";
 
-    /* Images to use for the slideshow */
-    var slides = [
-        "images/ha_001.jpg",
-        "images/ha_012.jpg",
-        "images/ka_010.jpg",
-        "images/ka_019.jpg",
-        "images/ka_035.jpg",
-        "images/so_035.jpg"
-    ];
-
-    var SLIDE_TIMEOUT = 15000;
+    var SLIDE_TIMEOUT = 25000;
     var NEWS_TIMEOUT  = 20000;
 
 
@@ -81,9 +79,12 @@ function main (news) {
         {},
 
         function change_slide (i) {
+            var url = _.simple_template("http://farm{{farm}}.staticflickr.com/{{server}}/{{id}}_{{secret}}.jpg", slides[i]);
             $("#slide").animate({opacity: 0}, 1000, function () {
-                $("#slide").css({backgroundImage: "url(" + slides[i] + ")"});
-                $("#slide").animate({opacity: 1}, 1000);
+                $("#slide").css({backgroundImage: "url(" + url + ")"});
+                setTimeout(function () {
+                    $("#slide").animate({opacity: 1}, 1000);
+                }, 1000);
             });
         },
 
@@ -95,7 +96,7 @@ function main (news) {
             var $news = $('<a class="news" target="_blank">')
                     .attr({ "data-index": i,
                             "href": news[i].link })
-                    .text(title)
+                    .text(i + ': ' + title)
                     .css({left: $(window).width()})
                     .appendTo("#news-wrap");
 
@@ -119,7 +120,7 @@ function main (news) {
         },
 
         function news_index (UI, st) {
-            UI.change_news(st.slide_index);
+            UI.change_news(st.news_index);
         },
 
         function mouse (UI, st) {
