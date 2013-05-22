@@ -215,3 +215,12 @@ Misc
 ----
 
 Pasta is licensed under MIT licence
+
+
+
+Change Log
+----------
+
+### 2013/5/22
+
+Pasta() now returns the signal function instead of an object.
