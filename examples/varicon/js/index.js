@@ -8,7 +8,7 @@
 
 var tech_news_json = "http://pipes.yahoo.com/pipes/pipe.run?_id=7eaefd6f25d7c11fd00c7c78b0628882&_render=json";
 
-var tsu_json = "http://133.242.154.120:3000/api/tab/tab_main/20/0";
+//var tsu_json = "http://133.242.154.120:3000/api/tab/tab_main/20/0";
 
 
 $(function () {
@@ -17,15 +17,10 @@ $(function () {
     });
 });
 
-function getContent (url, f) {
-    throw "temporary disabled";
-    $.getJSON("http://www.diffbot.com/api/article?token=XXX&url=" + url + "&callback=?", f);
-}
-
 function main (news) {
     "use strict";
 
-    /* Images to use for slideshow */
+    /* Images to use for the slideshow */
     var slides = [
         "images/ha_001.jpg",
         "images/ha_012.jpg",
@@ -34,12 +29,6 @@ function main (news) {
         "images/ka_035.jpg",
         "images/so_035.jpg"
     ];
-
-    /* Soundcloud initialization */
-    /*SC.initialize({
-     client_id: '95510fe86dbbd7dc7e00787b08c2831c'
-     });
-     */
 
     var SLIDE_TIMEOUT = 15000;
     var NEWS_TIMEOUT  = 20000;
