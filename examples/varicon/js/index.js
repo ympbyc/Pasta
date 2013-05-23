@@ -4,10 +4,12 @@
  * 2013 Minori Yamashita <ympbyc@gmail.com>
  */
 
-/* this: [$, _, DSS, jekt, Pasta, CLOS]  */
+/* this: [$, _, DSS, Pasta, CLOS]  */
 
+//news source - yahoo pipes
 var tech_news_json = "http://pipes.yahoo.com/pipes/pipe.run?_id=7eaefd6f25d7c11fd00c7c78b0628882&_render=json";
 
+//photo source - flicker
 var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=YOUR_API_KEY&format=json&nojsoncallback=1";
 
 $(function () {
@@ -73,6 +75,7 @@ function main (news, slides) {
     );
 
 
+    /* UI */
     var UI = _.module(
         {},
 
@@ -111,6 +114,7 @@ function main (news, slides) {
     );
 
 
+    /* View */
     var View = _.module(
         {},
 
@@ -177,6 +181,7 @@ function main (news, slides) {
 }
 
 
+/* Style */
 DSS({
     ".draggable::mouseover": {
         "opacity": 1
