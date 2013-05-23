@@ -12,24 +12,30 @@ html,body {
     background-size: cover;
 }
 
-#music-player {
-    position: absolute;
-    top: 20px;
-    left: 70%;
-    opacity: 0.5;
-}
-
-#twitter {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    opacity: 0.5;
-}
-
 .draggable {
     background-color: #e8e8e8;
     min-height: 18px;
     overflow: hidden;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    opacity: 0.5;
+    opacity: 0.5;
+}
+
+#music-player {
+    top: 40px;
+    left: 65%;
+}
+
+#twitter {
+    top: 80px;
+    left: 20px;
+}
+
+#clock {
+    top: 45%;
+    left: 30%;
 }
 
 #news-content {
@@ -69,4 +75,11 @@ html,body {
     height: 1.8em;
     overflow: hidden;
     color: #333;
+}
+
+
+#fullscreen {
+    position: absolute;
+    right: 10px;
+    top: 20px;
 }

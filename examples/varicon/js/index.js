@@ -10,9 +10,6 @@ var tech_news_json = "http://pipes.yahoo.com/pipes/pipe.run?_id=7eaefd6f25d7c11f
 
 var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=YOUR_API_KEY&format=json&nojsoncallback=1";
 
-//var tsu_json = "http://133.242.154.120:3000/api/tab/tab_main/20/0";
-
-
 $(function () {
     $.getJSON(tech_news_json, function (j) {
         getFlickr(_.partial(main, j.value.items));
@@ -21,6 +18,7 @@ $(function () {
 
 function getFlickr (f) {
     $.getJSON(flickr_recent, function (j) {
+        console.log(j);
         f(j.photos.photo);
     });
 }
@@ -42,19 +40,19 @@ function main (news, slides) {
         {},
 
         function next_slide (st) {
-            return {slide_index: inc_circular(slides.length, st.slide_index)};
+            return {slide_index: inc_circular(slides.length - 1, st.slide_index)};
         },
 
         function next_news (st) {
-            return {news_index: inc_circular(news.length, st.news_index)};
+            return {news_index: inc_circular(news.length - 1, st.news_index)};
         },
 
         function drag_start (st, $el) {
-            return {dragging: $el};
+            return {dragging: _.Maybe.just($el)};
         },
 
         function drag_end (st) {
-            return {dragging: null};
+            return {dragging: _.Maybe.nothing()};
         },
 
         function mouse_move (st, m) {
@@ -89,6 +87,7 @@ function main (news, slides) {
         },
 
         function change_news (i) {
+            console.log(i);
             $(".news").animate({opacity: 0}, 1000, function () {
                 $(this).remove();
             });  //remove previous
@@ -124,8 +123,12 @@ function main (news, slides) {
         },
 
         function mouse (UI, st) {
-            if (st.dragging)
-                UI.move_el(st.dragging, st.mouse.x, st.mouse.y);
+            _.domonad(
+                _.Maybe,
+                st.dragging,
+                function (d) {
+                    UI.move_el(d, st.mouse.x, st.mouse.y);
+                });
         }
     );
 
@@ -133,7 +136,8 @@ function main (news, slides) {
     var initial_state = {
         slide_index: 0,
         news_index:  0,
-        mouse:       {el: null, x:0, y:0},
+        mouse:       {x:0, y:0},
+        dragging:    _.Maybe.nothing(),
         slide_timer: null,
         news_timer:  null
     };
@@ -174,10 +178,10 @@ function main (news, slides) {
 
 
 DSS({
-    "#music-player,#twitter::mouseover": {
+    ".draggable::mouseover": {
         "opacity": 1
     },
-    "#music-player,#twitter,#news-content::mouseout": {
+    ".draggable,#news-content::mouseout": {
         "opacity": 0.5
     },
     "#news-content::mouseover": {
