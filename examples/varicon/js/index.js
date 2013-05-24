@@ -4,13 +4,14 @@
  * 2013 Minori Yamashita <ympbyc@gmail.com>
  */
 
-/* this: [$, _, DSS, Pasta, CLOS]  */
+/* this: [$, _, DSS, jekt, Pasta, CLOS]  */
 
-//news source - yahoo pipes
 var tech_news_json = "http://pipes.yahoo.com/pipes/pipe.run?_id=7eaefd6f25d7c11fd00c7c78b0628882&_render=json";
 
-//photo source - flicker
-var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=YOUR_API_KEY&format=json&nojsoncallback=1";
+var flickr_recent  = "http://api.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=c1cc9e10eb2c1c809eb97d2be0bbb8d7&format=json&nojsoncallback=1";
+
+//var tsu_json = "http://133.242.154.120:3000/api/tab/tab_main/20/0";
+
 
 $(function () {
     $.getJSON(tech_news_json, function (j) {
@@ -42,11 +43,11 @@ function main (news, slides) {
         {},
 
         function next_slide (st) {
-            return {slide_index: inc_circular(slides.length - 1, st.slide_index)};
+            return {slide_index: inc_circular(slides.length, st.slide_index)};
         },
 
         function next_news (st) {
-            return {news_index: inc_circular(news.length - 1, st.news_index)};
+            return {news_index: inc_circular(news.length, st.news_index)};
         },
 
         function drag_start (st, $el) {
@@ -75,7 +76,6 @@ function main (news, slides) {
     );
 
 
-    /* UI */
     var UI = _.module(
         {},
 
@@ -90,7 +90,6 @@ function main (news, slides) {
         },
 
         function change_news (i) {
-            console.log(i);
             $(".news").animate({opacity: 0}, 1000, function () {
                 $(this).remove();
             });  //remove previous
@@ -114,7 +113,6 @@ function main (news, slides) {
     );
 
 
-    /* View */
     var View = _.module(
         {},
 
@@ -178,10 +176,13 @@ function main (news, slides) {
         e.preventDefault();
         $(this).find(".content").slideToggle();
     });
+
+    $("#fullscreen").click(function () {
+        fullScreen($("#content")[0]);
+    });
 }
 
 
-/* Style */
 DSS({
     ".draggable::mouseover": {
         "opacity": 1
@@ -203,3 +204,15 @@ DSS({
         }
     }
 });
+
+
+function fullScreen (elem) {
+    console.log(elem);
+    if (elem.requestFullscreen)
+        elem.requestFullscreen();
+    else if (elem.mozRequestFullScreen)
+        elem.mozRequestFullScreen();
+    else if (elem.webkitRequestFullscreen)
+        elem.webkitRequestFullscreen();
+    throw "Fullscreen API is unavailable on your platform";
+}
