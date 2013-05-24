@@ -12,6 +12,10 @@ var Model = _.module(
             se(typeof signal, "function", "signal is passed as the third argument");
         });
         return {user: _.assoc(state.user, 'name', data)};
+    },
+
+    function harmless () {
+        return {};
     }
 );
 
@@ -50,6 +54,13 @@ test("Pasta", function () {
 signal("change_name", function (e) {
     test("signal", function () {
         se(e.val, "Dave", "The function has access to event object");
+
+        try {
+            $('<div data-id="test123">').on("foo", signal("harmless", function () {
+                se($(this).attr("data-id"), "test123", "The function has access to this");
+            })).trigger("foo");
+        } catch (err) {console.log(err);}
+
     });
 
     return e.val;

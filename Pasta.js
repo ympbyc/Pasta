@@ -25,7 +25,7 @@ var Pasta = (function () {
     //`signal` have to be defined here because it accesses the closed mutable value `appState`
     function signal (ev_name, fn) {
       return function (e) {
-        var val = fn ? fn(e) : e;
+        var val = fn ? fn.bind(this)(e) : e;
         setTimeout(function () {
             mainloop(appState, ev_name, val);
         }, 0);
