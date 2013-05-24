@@ -1,0 +1,14 @@
+{
+  "name": "Pasta",
+  "version": "0.1.0",
+  "main": "Pasta.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": [
+    "underscore": "~1.4.4",
+    "underscore-fix": "git://github.com/ympbyc/underscore-fix.git"
+  ]
+}
