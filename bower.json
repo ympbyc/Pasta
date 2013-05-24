@@ -7,8 +7,8 @@
     "node_modules",
     "components"
   ],
-  "dependencies": [
+  "dependencies": {
     "underscore": "~1.4.4",
     "underscore-fix": "git://github.com/ympbyc/underscore-fix.git"
-  ]
+  }
 }
