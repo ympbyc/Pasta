@@ -59,7 +59,6 @@
       finish_edit($(this), $el, todo);
     });
     $el.find(".toggle").click(PastaTodo.pasta_signal("toggle_status", function () {
-      console.log($(this).is(":checked"))
       return { completed: $(this).is(":checked"), todo: todo };
     }));
     $el.find(".destroy").click(PastaTodo.pasta_signal("destroy_todo", function () {
