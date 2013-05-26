@@ -1,50 +1,42 @@
-# Framework Name TodoMVC Example
+# Pasta TodoMVC Example
 
-> Short description of the framework provided by the official website.
+> Pasta Meta Application Function
 
-> _[Framework Name - framework.com](link-to-framework)_
+> _[Pasta](https://github.com/ympbyc/Pasta)_
 
 
-## Learning Framework Name
+## Learning Pasta
 
-The [Framework Name website]() is a great resource for getting started.
+The [Pasta](https://github.com/ympbyc/Pasta) is a great resource for getting started. I am preparing a landing page. Stay tuned.
 
 Here are some links you may find helpful:
 
-* [Documentation]()
-* [API Reference]()
-* [Applications built with Framework Name]()
-* [Blog]()
-* [FAQ]()
-* [Framework Name on GitHub]()
+* [Documentation](https://github.com/ympbyc/Pasta/blob/master/README.md)
+* [API Reference](https://github.com/ympbyc/Pasta/blob/master/README.md)
+* Applications built with Pasta
+    * http://noroshi.me/
+* [Framework Name on GitHub](https://github.com/ympbyc/Pasta)
 
 Articles and guides from the community:
 
-* [Article 1]()
-* [Article 2]()
+* --
 
-Get help from other Framework Name users:
+Get help from other Pasta users:
 
-* [Framework Name on StackOverflow](http://stackoverflow.com/questions/tagged/____)
-* [Mailing list on Google Groups]()
-* [Framework Name on Twitter](http://twitter.com/____)
-* [Framework Name on Google +]()
-
-_If you have other helpful links to share, or find any of the links above no longer work, please [let us know](https://github.com/tastejs/todomvc/issues)._
+* --
+* --
+* --
+* --
 
 
 ## Implementation
 
-How is the app structured? Are there deviations from the spec? If so, why?
-
+The app consists of 3 main modules. Model, View, and UI. In Pasta, only one module exists for each role. The model handles all the data the app uses. The view is just a glue between the model and the UI. The UI module handles all the rendering and some controller job.
 
 ## Running
 
-If there is a build step required to get the example working, explain it here.
-
-To run the app, spin up an HTTP server and visit http://localhost/.../myexample/.
-
+Open index.html in your favourite browser.
 
 ## Credit
 
-This TodoMVC application was created by [you]().
+This TodoMVC application was created by [Minori Yamashita](https://github.com/ympbyc).

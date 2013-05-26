@@ -1,11 +1,11 @@
 (function( window ) {
   'use strict';
 
-  //Controllers listen to DOM events and signals
+  //Controllers listen to DOM events and emit signals
 
   var signal = PastaTodo.pasta_signal;
 
-  //Create a atodo on keyup
+  //Create a todo on keyup
   $("#new-todo").keyup(function (e) {
     var title;
     if (PastaTodo.Helper.enter_key(e.which)) {
@@ -15,7 +15,7 @@
     }
   });
 
-  //Clear Completed button
+  //`Clear Completed` button
   $("#clear-completed").click(signal("clear_completed"));
 
   //The checkbox right next to #new-todo
