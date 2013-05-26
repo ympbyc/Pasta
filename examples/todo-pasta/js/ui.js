@@ -47,6 +47,7 @@
 
   function todo_wrap (todo) {
     var $el = $("<div>").html(_.template(TODO_TEMPLATE, todo)).find("li");
+
     $el.find("label").dblclick(function () {
       $el.addClass("editing");
     });
@@ -60,6 +61,10 @@
       console.log($(this).is(":checked"))
       return { completed: $(this).is(":checked"), todo: todo };
     }));
+    $el.find(".destroy").click(PastaTodo.pasta_signal("destroy_todo", function () {
+      return todo;
+    }));
+    
     return $el;
   }
 
