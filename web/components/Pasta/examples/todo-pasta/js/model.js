@@ -8,7 +8,7 @@
    */
   PastaTodo.Model = _.module(
     {},
-
+    
     function init_app () {
       var default_app = {
         show_mode: "show_all",
@@ -61,7 +61,6 @@
     //One of Pasta's selling points is the ability to save the entire running app
     function save_app (app) {
       localStorage.setItem("pasta-todo", JSON.stringify(app));
-      return {};
     },
 
     //routing
