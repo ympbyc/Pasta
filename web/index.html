@@ -81,11 +81,11 @@
     $('#message-submit').click(pasta_signal('change_message', function (e) {
         return $('#message-input').val();
     }));
-} (window));</script></div></section><hr /><section><h2>Pasta Is Simple</h2><p><strong>Simple</strong> in the sense Rich Hickey told us in his talk <a href="http://www.infoq.com/presentations/Simple-Made-Easy">Simple Made Easy</a>. Pasta lets you treat <span class="important">data as data</span> and it turns <span class="important">uncontrolled global state into a concrete first-class value</span>. Pasta is mostly functional. The model is a collection of pure functions. The application itself is a pure function that maps an application state to an UI state.</p><p>Pasta is simple because Pasta apps are not object oriented. Objects should be avoided where possible because they introduce implicit global state, makes it hard to inspect data (you know, "<i>information hiding</i>") and makes it so easy to corrupt data.</p><p>Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore (or lodash). There are good UI manipulation libraries already, namely jQuery (or Zepto). No point reinventing the wheel is there?</p></section><hr /><section id="mvc"><h2>MVC the Pasta way</h2>With all that in mind, lets see how Pasta effectively forces presentation domain separation, by looking at the classic TodoMVC example. The full source is available <a href="https://github.com/ympbyc/Pasta/tree/master/examples/todo-pasta">here</a>.<section><h3>Model</h3><pre class="prettyprint">
+} (window));</script></div></section><hr /><section><h2>Pasta Is Simple</h2><p><strong>Simple</strong> in the sense Rich Hickey told us in his talk <a href="http://www.infoq.com/presentations/Simple-Made-Easy">Simple Made Easy</a>. Pasta lets you treat <span class="important">data as data</span> and it turns <span class="important">uncontrolled global state into a concrete first-class value</span>. Pasta is mostly functional. The model is a collection of pure functions. The application itself is a pure function that maps an application state to an UI state.</p><p>Pasta is simple because Pasta apps are not object oriented. Objects should be avoided where possible because they introduce implicit global state, makes it hard to inspect data (you know, "<i>information hiding</i>") and makes it so easy to corrupt data.</p><p>Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore. There are good UI manipulation libraries already, namely jQuery. No point reinventing the wheel is there?</p></section><hr /><section id="mvc"><h2>MVC the Pasta way</h2>With all that in mind, lets see how Pasta effectively forces presentation domain separation, by looking at the classic TodoMVC example. The full source is available <a href="https://github.com/ympbyc/Pasta/tree/master/examples/todo-pasta">here</a>.<section><h3>Model</h3><pre class="prettyprint">
 var Model = _.module(
     {},
 
-    //add a new todo entry
+    //Add a new todo entry
     function add_todo (state, title) {
         //check that it's not empty before creating a new todo.
         var trimmed_title = title.trim();
@@ -93,7 +93,7 @@ var Model = _.module(
         return { todos: state.todos.concat({title: title, completed: false}) };
     },
 
-    //mark a todo either active or complete
+    //Mark a todo either active or complete
     function toggle_status (state, data) {
         return { todos: _.map(state.todos, function (todo) {
             if (todo === data.todo) return _.assoc(todo, 'completed', data.completed);
@@ -101,22 +101,24 @@ var Model = _.module(
         }) };
     },
 
-    //clear completed todos
+    //Clear completed todos
     function clear_completed (state) {
         return { todos: _.reject(state.todos, _.flippar(_.at, 'completed')) };
     },
 
+    //Save the entire app to localStorage
     function save_app (state) {
         localStorage.setItem('pasta-todo', JSON.stringify(state));
         return {};
     },
 
+    //Recover the app from localStorage
     function load_app (state) {
         return localStorage.getItem('pasta-todo')
             || { todos: [] };
     }
 );
-</pre><p>The Model is a hashmap mapping signal names to binary functions. <span class="code">_.module()</span> provides a nice way to write hashmap-of-functions prettily. Each function receives the current state as its first argument. The second is whatever is passed in via a signal which we will come to later. The state is just a plain hashmap which you mustn't mutate yourself. The role of each function is to return a patch. Patches are, again, just a plain hashmap.</p><p>Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is easy peasy.</p></section><section><h3>View</h3><pre class="prettyprint">
+</pre><p>The Model is a hashmap mapping signal names to binary functions. <span class="code">_.module()</span> provides a nice way to write hashmap-of-functions prettily. Each function receives the current state as its first argument. The second is whatever is passed in via a signal which we will come to later. The state is just a plain hashmap which you mustn't mutate yourself. The role of each function is to return a patch. Patches are, again, just a plain hashmap.</p><p>Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is a piece of cake.</p></section><section><h3>View</h3><pre class="prettyprint">
 var View = _.module(
     {},
 
@@ -124,7 +126,7 @@ var View = _.module(
         UI.render_todos(state.todos);
     }
 );
-</pre><p>The view is a hashmap mapping field names of the state to ternary functions. Each function gets called whenever the field that the function is responsible for. The first argument is the UI module which we will see next. The second is the new state after the change. The last argument is the value of the field before the change. The role of each function is to call functions (uh, ahem) subroutines in the UI module. Although the functions receive the state, mutating it is no use since it is a fresh copy. Don't try.</p></section><section><h3>UI</h3><pre class="prettyprint">
+</pre><p>The view is a hashmap mapping field names of the state to ternary functions. Each function gets called whenever the field the function is responsible for changes. The first argument is the UI module which we will see next. The second is the new state after the change. The last argument is the value of the field before the change. The role of each function is to call functions (uh, ahem, subroutines) in the UI module. Although the functions receive the state, mutating it is no use since it is a fresh copy. Don't try.</p></section><section><h3>UI</h3><pre class="prettyprint">
 var UI = _.module(
     {},
 
@@ -132,7 +134,7 @@ var UI = _.module(
         $('#todos').html(_.template(TODOS_TEMPLATE, todos));
     }
 )
-</pre><p>No description is needed for the UI module because it isn't really a part of Pasta. Pasta does not care how you manage the UI, making Pasta portable accross different platforms. In fact Pasta initily targeted Titanium Mobile as a platform and it probably runs still.</p></section><section><h3>Generation of An App</h3><pre class="prettyprint">var pasta_signal = Pasta(Model, UI, View);</pre><p>Throw all of the above three modules at <span class="code">Pasta</span> to generate the app. <span class="code">Pasta</span> leaves a function behind which is the only one connection we have to the running app. We will make heavy use of this function in controllers.</p></section><section><h3>Controller</h3><pre class="prettyprint">
+</pre><p>No description is needed for the UI module because it isn't really a part of Pasta. Pasta does not care how you manage the UI. this makes Pasta portable accross different platforms. In fact Pasta initialy targeted Titanium Mobile as a platform and it probably still runs.</p></section><section><h3>Generation of An App</h3><pre class="prettyprint">var pasta_signal = Pasta(Model, UI, View);</pre><p>Throw all of the above three modules at <span class="code">Pasta</span> to generate the app. <span class="code">Pasta</span> leaves a function behind which is the only connection we have to the running app. We will make heavy use of this function in our controllers.</p></section><section><h3>Controller</h3><pre class="prettyprint">
 $('#new-todo').keyup(function (e) {
     if (e.which === ENTER_KEY) {
         signal('add_todo')($(this).val());
@@ -140,7 +142,7 @@ $('#new-todo').keyup(function (e) {
 });
 
 $('#clear-completed').click(signal('clear_completed'));
-</pre><p>Controllers are not grouped into a module because there's no need to. Controllers can be anything that <span class="code">signal</span>s. A signal invokes a model function and whatever you feed to <span class="code">signal</span> becomes the second argumentof the functions in the model.</p></section></section><hr /><section id="diagram"><h2>A Diagram</h2><p>Here is a conceptual diagram of Pasta applications.</p><pre class="tough">
+</pre><p>Controllers are not grouped into a module because there's no need to. Controllers can be anything that <span class="code">signal</span>s. A signal invokes a model function and whatever you feed to <span class="code">signal</span> becomes the second argument to the function.</p></section></section><hr /><section id="diagram"><h2>A Diagram</h2><p>Here is a conceptual diagram of Pasta applications.</p><pre class="tough">
                          <span class="yellow">--------></span>
  User <span class="orange"><--></span> UI <span class="orange">--></span> Signal <span class="orange">--------></span> Model
            <span class="orange">^</span>                       <span class="yellow">/</span> <span class="orange">|</span>
@@ -243,7 +245,7 @@ $('a.page').click(function (e) {
 var Model = _.module(
     {},
 
-    //add a new todo entry
+    //Add a new todo entry
     function add_todo (state, title) {
         //check that it's not empty before creating a new todo.
         var trimmed_title = title.trim();
@@ -251,7 +253,7 @@ var Model = _.module(
         return { todos: state.todos.concat({title: title, completed: false}) };
     },
 
-    //mark a todo either active or complete
+    //Mark a todo either active or complete
     function toggle_status (state, data) {
         return { todos: _.map(state.todos, function (todo) {
             if (todo === data.todo) return _.assoc(todo, 'completed', data.completed);
@@ -259,16 +261,18 @@ var Model = _.module(
         }) };
     },
 
-    //clear completed todos
+    //Clear completed todos
     function clear_completed (state) {
         return { todos: _.reject(state.todos, _.flippar(_.at, 'completed')) };
     },
 
+    //Save the entire app to localStorage
     function save_app (state) {
         localStorage.setItem('pasta-todo', JSON.stringify(state));
         return {};
     },
 
+    //Recover the app from localStorage
     function load_app (state) {
         return localStorage.getItem('pasta-todo')
             || { todos: [] };
@@ -398,7 +402,7 @@ Flow of data:    &lt;span class=\&quot;yellow\&quot;&gt;---------&gt;&lt;/span&g
      [:h2 &quot;Pasta Is Simple&quot;]
      [:p [:strong &quot;Simple&quot;] &quot; in the sense Rich Hickey told us in his talk &quot; [:a {:href &quot;http://www.infoq.com/presentations/Simple-Made-Easy&quot;} &quot;Simple Made Easy&quot;] &quot;. Pasta lets you treat &quot; [:span.important &quot;data as data&quot;] &quot; and it turns &quot; [:span.important &quot;uncontrolled global state into a concrete first-class value&quot;] &quot;. Pasta is mostly functional. The model is a collection of pure functions. The application itself is a pure function that maps an application state to an UI state.&quot;]
      [:p &quot;Pasta is simple because Pasta apps are not object oriented. Objects should be avoided where possible because they introduce implicit global state, makes it hard to inspect data (you know, \&quot;&quot; [:i &quot;information hiding&quot;] &quot;\&quot;) and makes it so easy to corrupt data.&quot;]
-     [:p &quot;Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore (or lodash). There are good UI manipulation libraries already, namely jQuery (or Zepto). No point reinventing the wheel is there?&quot;]]
+     [:p &quot;Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore. There are good UI manipulation libraries already, namely jQuery. No point reinventing the wheel is there?&quot;]]
     [:hr]
     [:section#mvc
      [:h2 &quot;MVC the Pasta way&quot;]
@@ -407,23 +411,23 @@ Flow of data:    &lt;span class=\&quot;yellow\&quot;&gt;---------&gt;&lt;/span&g
       [:h3 &quot;Model&quot;]
       [:pre.prettyprint code-model-js]
       [:p &quot;The Model is a hashmap mapping signal names to binary functions. &quot; [:span.code &quot;_.module()&quot;] &quot; provides a nice way to write hashmap-of-functions prettily. Each function receives the current state as its first argument. The second is whatever is passed in via a signal which we will come to later. The state is just a plain hashmap which you mustn't mutate yourself. The role of each function is to return a patch. Patches are, again, just a plain hashmap.&quot;]
-      [:p &quot;Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is easy peasy.&quot;]]
+      [:p &quot;Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is a piece of cake.&quot;]]
      [:section
       [:h3 &quot;View&quot;]
       [:pre.prettyprint code-view-js]
-      [:p &quot;The view is a hashmap mapping field names of the state to ternary functions. Each function gets called whenever the field that the function is responsible for. The first argument is the UI module which we will see next. The second is the new state after the change. The last argument is the value of the field before the change. The role of each function is to call functions (uh, ahem) subroutines in the UI module. Although the functions receive the state, mutating it is no use since it is a fresh copy. Don't try.&quot;]]
+      [:p &quot;The view is a hashmap mapping field names of the state to ternary functions. Each function gets called whenever the field the function is responsible for changes. The first argument is the UI module which we will see next. The second is the new state after the change. The last argument is the value of the field before the change. The role of each function is to call functions (uh, ahem, subroutines) in the UI module. Although the functions receive the state, mutating it is no use since it is a fresh copy. Don't try.&quot;]]
      [:section
       [:h3 &quot;UI&quot;]
       [:pre.prettyprint code-ui-js]
-      [:p &quot;No description is needed for the UI module because it isn't really a part of Pasta. Pasta does not care how you manage the UI, making Pasta portable accross different platforms. In fact Pasta initily targeted Titanium Mobile as a platform and it probably runs still.&quot;]]
+      [:p &quot;No description is needed for the UI module because it isn't really a part of Pasta. Pasta does not care how you manage the UI. this makes Pasta portable accross different platforms. In fact Pasta initialy targeted Titanium Mobile as a platform and it probably still runs.&quot;]]
      [:section
       [:h3 &quot;Generation of An App&quot;]
       [:pre.prettyprint &quot;var pasta_signal = Pasta(Model, UI, View);&quot;]
-      [:p &quot;Throw all of the above three modules at &quot; [:span.code &quot;Pasta&quot;] &quot; to generate the app. &quot; [:span.code &quot;Pasta&quot;] &quot; leaves a function behind which is the only one connection we have to the running app. We will make heavy use of this function in controllers.&quot;]]
+      [:p &quot;Throw all of the above three modules at &quot; [:span.code &quot;Pasta&quot;] &quot; to generate the app. &quot; [:span.code &quot;Pasta&quot;] &quot; leaves a function behind which is the only connection we have to the running app. We will make heavy use of this function in our controllers.&quot;]]
      [:section
       [:h3 &quot;Controller&quot;]
       [:pre.prettyprint code-controller-js]
-      [:p &quot;Controllers are not grouped into a module because there's no need to. Controllers can be anything that &quot; [:span.code &quot;signal&quot;] &quot;s. A signal invokes a model function and whatever you feed to &quot; [:span.code &quot;signal&quot;] &quot; becomes the second argumentof the functions in the model.&quot;]]]
+      [:p &quot;Controllers are not grouped into a module because there's no need to. Controllers can be anything that &quot; [:span.code &quot;signal&quot;] &quot;s. A signal invokes a model function and whatever you feed to &quot; [:span.code &quot;signal&quot;] &quot; becomes the second argument to the function.&quot;]]]
     [:hr]
     [:section#diagram
      [:h2 &quot;A Diagram&quot;]
