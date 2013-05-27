@@ -145,6 +145,32 @@ Flow of control: <span class=\"orange\">---------></span>
 Flow of data:    <span class=\"yellow\">---------></span>
 ")
 
+(def diagram-2 "
+  User <span class=\"orange\"><--></span> UI <span class=\"orange\">--></span> Controller
+   <span class=\"orange\">^^</span>       <span class=\"orange\">^</span>          <span class=\"yellow\">|</span><span class=\"orange\">|</span>        G
+   <span class=\"orange\">||</span>       <span class=\"orange\">|</span>   <span class=\"yellow\"><----- v</span><span class=\"orange\">v</span>        l
+   <span class=\"orange\">||</span>      View <span class=\"orange\"><-----</span> Model     o S
+   <span class=\"orange\">||</span>                            b t
+   <span class=\"orange\">|------></span> UI <span class=\"orange\">--></span> Controller    a a
+   <span class=\"orange\">|</span>        <span class=\"orange\">^</span>           <span class=\"yellow\">|</span><span class=\"orange\">|</span>       l t
+   <span class=\"orange\">|</span>        <span class=\"orange\">|</span>   <span class=\"yellow\"><-----  v</span><span class=\"orange\">v</span>         e
+   <span class=\"orange\">|</span>       View <span class=\"orange\"><-----</span> Model
+   <span class=\"orange\">|</span>
+  <span class=\"orange\">...</span>
+
+Flow of control: <span class=\"orange\">---------></span>
+Flow of data:    <span class=\"yellow\">---------></span>
+")
+
+
+(def menu
+  [:div#menu
+   [:a.btn.btn-blue.page {:href "#content"} "Top"]
+   [:a.btn.btn-blue.page {:href "#downloads"} "Downloads"]
+   [:a.btn.btn-blue.page {:href "#smallest-example"} "Example"]
+   [:a.btn.btn-blue.page {:href "#mvc"} "MVC"]
+   [:a.btn.btn-blue.page {:href "#diagram"} "Diagram"]])
+
 (defn html-head []
   [:head
    [:meta {:charset "utf-8"}]
@@ -165,27 +191,40 @@ Flow of data:    <span class=\"yellow\">---------></span>
   [:body {:onload "prettyPrint()"}
    [:header
     [:h1 "Pasta"]
-    [:i "Meta Application"]]
+    [:i "Meta Application"]
+    menu]
    [:div#content
+    [:div
+     [:img.center {:src "images/logo.svg"}]]
     [:section
+     [:p "Pasta is a functional approach to give structure to JavaScript applications."]
+     [:p "The project is " [:a {:href "https://github.com/ympbyc/Pasta"} "hosted on GitHub"] ". Eaxample application is available " [:a {:href "http://ympbyc.github.io/Pasta/examples/todo-pasta/"} "here"] "."]]
+    [:section#downloads
+     [:h2 "Downloads and Dependencies"]
+     [:div
+      [:a.btn.btn-blue {:href "https://raw.github.com/ympbyc/Pasta/master/Pasta.js"} "Pasta.js (master)"] [:em " 2kb uncompressed"]
+      [:p "Pasta depends on " [:a {:href "http://underscorejs.org/"} "Underscore"] " (or lodash if you prefer), and " [:a {:href "https://github.com/ympbyc/underscore-fix"} "Underscore-fix"] ". " [:a {:href "http://jquery.com/"} "jQuery"] " is optional."]]]
+    [:section#not-your-daddy
      [:h2 "Not Your Daddy's MVC Framework"]
      [:p "In fact, Pasta isn't even a framework, nor a library but a single 35 line function. If you are familier with FP(Functional Programming), Pasta is a higher order function much like " [:span.code "fold"] " and " [:span.code "compose"] " . Just like " [:span.code "fold"] " abstracting the essence of recursion, Pasta abstracts the essence of entire JavaScript application. Just like " [:span.code "compose"] " taking functions to create a function, Patsa takes collections of functions to create an application. If frameworks are tools or guidelines to construct a building, " [:span.important "Pasta is a machine that builds the entire building according to the blueprint you feed it."]]]
-    [:section
+    [:hr]
+    [:section#smallest-example
      [:h2 "Smallest Example"]
      [:p "Let me show you a tiny example. Just note it's a bit overkill to use Pasta for an app of this size."]
      [:pre.prettyprint
       code-smallest-html]
-     [:p "Here you can see what Pasta depends on. " [:a {:href "http://underscorejs.org/"} "Underscore"] "(or lodash if you prefer), and " [:a {:href "https://github.com/ympbyc/underscore-fix"} "Underscore-fix"] ". jQuery is optional."]
      [:pre#code-smallest.prettyprint
       code-smallest-js]
      [:p "Here goes the live demo."]
      demo-smallest]
+    [:hr]
     [:section
      [:h2 "Pasta Is Simple"]
      [:p [:strong "Simple"] " in the sense Rich Hickey told us in his talk " [:a {:href "http://www.infoq.com/presentations/Simple-Made-Easy"} "Simple Made Easy"] ". Pasta lets you treat " [:span.important "data as data"] " and it turns " [:span.important "uncontrolled global state into a concrete first-class value"] ". Pasta is mostly functional. The model is a collection of pure functions. The application itself is a pure function that maps an application state to an UI state."]
      [:p "Pasta is simple because Pasta apps are not object oriented. Objects should be avoided where possible because they introduce implicit global state, makes it hard to inspect data (you know, \"" [:i "information hiding"] "\") and makes it so easy to corrupt data."]
      [:p "Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore (or lodash). There are good UI manipulation libraries already, namely jQuery (or Zepto). No point reinventing the wheel is there?"]]
-    [:section
+    [:hr]
+    [:section#mvc
      [:h2 "MVC the Pasta way"]
      "With all that in mind, lets see how Pasta effectively forces presentation domain separation, by looking at the classic TodoMVC example. The full source is available " [:a {:href "https://github.com/ympbyc/Pasta/tree/master/examples/todo-pasta"} "here"] "."
      [:section
@@ -209,10 +248,22 @@ Flow of data:    <span class=\"yellow\">---------></span>
       [:h3 "Controller"]
       [:pre.prettyprint code-controller-js]
       [:p "Controllers are not grouped into a module because there's no need to. Controllers can be anything that " [:span.code "signal"] "s. A signal invokes a model function and whatever you feed to " [:span.code "signal"] " becomes the second argumentof the functions in the model."]]]
-    [:section
+    [:hr]
+    [:section#diagram
      [:h2 "A Diagram"]
+     [:p "Here is a conceptual diagram of Pasta applications."]
      [:pre.tough
-      diagram]]]])
+      diagram]
+     [:p "And this is how OO-MVC applications look like."]
+     [:pre.tough
+      diagram-2]]]
+   [:script "
+$('a.page').click(function (e) {
+  e.preventDefault();
+  $('html,body').animate({scrollTop: $($(this).attr('href')).offset().top - $('header').height()});
+  return false;
+});
+"]])
 
 (defn main-html []
   (h/html

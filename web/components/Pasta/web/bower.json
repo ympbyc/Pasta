@@ -1,0 +1,16 @@
+{
+    "name": "Pasta-web",
+    "version": "0.0.0",
+    "main": "index.html",
+    "ignore": [
+        "**/.*",
+        "node_modules",
+        "components"
+    ],
+    "dependencies": {
+        "kraken": "https://github.com/cferdinandi/kraken.git",
+        "jquery": "~2.0.0",
+        "google-code-prettify": "/Users/ympbyc/Downloads/google-code-prettify",
+        "Pasta": "ympbyc/Pasta"
+    }
+}

@@ -50,6 +50,7 @@
 
     $el.find("label").dblclick(function () {
       $el.addClass("editing");
+      $el.find(".edit").focus();
     });
     $el.find(".edit").keyup(function (e) {
       if (PastaTodo.Helper.enter_key(e.which)) finish_edit($(this), $el, todo);
@@ -58,13 +59,12 @@
       finish_edit($(this), $el, todo);
     });
     $el.find(".toggle").click(PastaTodo.pasta_signal("toggle_status", function () {
-      console.log($(this).is(":checked"))
       return { completed: $(this).is(":checked"), todo: todo };
     }));
     $el.find(".destroy").click(PastaTodo.pasta_signal("destroy_todo", function () {
       return todo;
     }));
-    
+
     return $el;
   }
 
@@ -72,6 +72,7 @@
     $el.removeClass("editing");
     var title = $this.val();
     if (title) PastaTodo.pasta_signal("update")({ todo: todo, title: title });
+    else PastaTodo.pasta_signal("destroy_todo")(todo);
   }
 
 })( window );
