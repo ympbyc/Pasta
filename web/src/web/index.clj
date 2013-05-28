@@ -64,62 +64,60 @@
    [:script code-smallest-js]])
 
 (def code-model-js "
-var Model = _.module(
-    {},
+var Model = _.module({}, add_todo, toggle_status, clear_completed, save_app, load_app);
 
-    //Add a new todo entry
-    function add_todo (state, title) {
-        //check that it's not empty before creating a new todo.
-        var trimmed_title = title.trim();
-        if (_.isEmpty(trimmed_title)) return {};
-        return { todos: state.todos.concat({title: title, completed: false}) };
-    },
+//Add a new todo entry
+function add_todo (state, title) {
+    //check that it's not empty before creating a new todo.
+    var trimmed_title = title.trim();
+    if (_.isEmpty(trimmed_title)) return {};
+    return { todos: state.todos.concat({title: title, completed: false}) };
+}
 
-    //Mark a todo either active or complete
-    function toggle_status (state, data) {
-        return { todos: _.map(state.todos, function (todo) {
-            if (todo === data.todo) return _.assoc(todo, 'completed', data.completed);
-            return todo;
-        }) };
-    },
 
-    //Clear completed todos
-    function clear_completed (state) {
-        return { todos: _.reject(state.todos, _.flippar(_.at, 'completed')) };
-    },
+//Mark a todo either active or complete
+function toggle_status (state, data) {
+    return { todos: _.map(state.todos, function (todo) {
+        if (todo === data.todo) return _.assoc(todo, 'completed', data.completed);
+        return todo;
+    }) };
+}
 
-    //Save the entire app to localStorage
-    function save_app (state) {
-        localStorage.setItem('pasta-todo', JSON.stringify(state));
-        return {};
-    },
 
-    //Recover the app from localStorage
-    function load_app (state) {
-        return localStorage.getItem('pasta-todo')
-            || { todos: [] };
-    }
-);
+//Clear completed todos
+function clear_completed (state) {
+    return { todos: _.reject(state.todos, _.flippar(_.at, 'completed')) };
+}
+
+
+//Save the entire app to localStorage
+function save_app (state) {
+    localStorage.setItem('pasta-todo', JSON.stringify(state));
+    return {};
+}
+
+
+//Recover the app from localStorage
+function load_app (state) {
+    return localStorage.getItem('pasta-todo')
+        || { todos: [] };
+}
 ")
 
 (def code-view-js "
-var View = _.module(
-    {},
+var View = _.module({}, todos);
 
-    function todos (UI, state) {
-        UI.render_todos(state.todos);
-    }
-);
+function todos (UI, state) {
+    UI.render_todos(state.todos);
+}
 ")
 
 (def code-ui-js "
-var UI = _.module(
-    {},
+var UI = _.module({}, render_todos);
 
-    function render_todos (todos) {
-        $('#todos').html(_.template(TODOS_TEMPLATE, todos));
-    }
-)
+function render_todos (todos) {
+    $('#todos').html(_.template(TODOS_TEMPLATE, todos));
+}
 ")
 
 (def code-controller-js "
@@ -128,6 +126,7 @@ $('#new-todo').keyup(function (e) {
         signal('add_todo')($(this).val());
     }
 });
+
 
 $('#clear-completed').click(signal('clear_completed'));
 ")
