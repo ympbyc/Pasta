@@ -132,39 +132,6 @@ $('#new-todo').keyup(function (e) {
 $('#clear-completed').click(signal('clear_completed'));
 ")
 
-(def diagram "
-                         <span class=\"yellow\">--------></span>
- User <span class=\"orange\"><--></span> UI <span class=\"orange\">--></span> Signal <span class=\"orange\">--------></span> Model
-           <span class=\"orange\">^</span>                       <span class=\"yellow\">/</span> <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span>                      <span class=\"yellow\">/</span>  <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span>   <span class=\"yellow\">-----</span>  State <span class=\"yellow\"><-----</span>   <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span>  <span class=\"yellow\">/</span>                      <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span> <span class=\"yellow\">v</span>                       <span class=\"orange\">|</span>
-          View <span class=\"orange\"><----------------------</span>
-
-
-Flow of control: <span class=\"orange\">---------></span>
-Flow of data:    <span class=\"yellow\">---------></span>
-")
-
-(def diagram-2 "
-  User <span class=\"orange\"><--></span> UI <span class=\"orange\">--></span> Controller
-   <span class=\"orange\">^^</span>       <span class=\"orange\">^</span>          <span class=\"yellow\">|</span><span class=\"orange\">|</span>        G
-   <span class=\"orange\">||</span>       <span class=\"orange\">|</span>   <span class=\"yellow\"><----- v</span><span class=\"orange\">v</span>        l
-   <span class=\"orange\">||</span>      View <span class=\"orange\"><-----</span> Model     o S
-   <span class=\"orange\">||</span>                            b t
-   <span class=\"orange\">|------></span> UI <span class=\"orange\">--></span> Controller    a a
-   <span class=\"orange\">|</span>        <span class=\"orange\">^</span>           <span class=\"yellow\">|</span><span class=\"orange\">|</span>       l t
-   <span class=\"orange\">|</span>        <span class=\"orange\">|</span>   <span class=\"yellow\"><-----  v</span><span class=\"orange\">v</span>         e
-   <span class=\"orange\">|</span>       View <span class=\"orange\"><-----</span> Model
-   <span class=\"orange\">|</span>
-  <span class=\"orange\">...</span>
-
-Flow of control: <span class=\"orange\">---------></span>
-Flow of data:    <span class=\"yellow\">---------></span>
-")
-
-
 (def menu
   [:div#menu
    [:a.btn.btn-blue.page {:href "#content"} "Top"]
@@ -199,7 +166,7 @@ Flow of data:    <span class=\"yellow\">---------></span>
     [:div
      [:img.center {:src "images/logo.svg"}]]
     [:section
-     [:p "Pasta is a functional approach to give structure to JavaScript applications."]
+     [:p "Pasta is a function that helps you write JavaScript MVC applications functionally. Pasta's state management model is heavily influenced by that of " [:a {:href "http://clojure.org/state"} "Clojure's"] "."]
      [:p "The project is " [:a {:href "https://github.com/ympbyc/Pasta"} "hosted on GitHub"] ". Eaxample application is available " [:a {:href "http://ympbyc.github.io/Pasta/examples/todo-pasta/"} "here"] "."]]
     [:section#downloads
      [:h2 "Downloads and Dependencies"]

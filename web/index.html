@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="utf-8" /><title>Pasta</title><link href="components/kraken/kraken.css" rel="stylesheet" /><link href="components/google-code-prettify/prettify.css" rel="stylesheet" /><link href="css/style.css" rel="stylesheet" /><script src="components/jquery/jquery.min.js"></script><script src="components/google-code-prettify/prettify.js"></script><script src="components/underscore/underscore-min.js"></script><script src="components/underscore-fix/underscore-fix.js"></script><script src="components/Pasta/Pasta.js"></script></head><body onload="prettyPrint()"><header><h1>Pasta</h1><i>Meta Application</i><div id="menu"><a class="btn btn-blue page" href="#content">Top</a><a class="btn btn-blue page" href="#downloads">Downloads</a><a class="btn btn-blue page" href="#smallest-example">Example</a><a class="btn btn-blue page" href="#mvc">MVC</a><a class="btn btn-blue page" href="#diagram">Diagram</a></div></header><div id="content"><div><img class="center" src="images/logo.svg" /></div><section><p>Pasta is a functional approach to give structure to JavaScript applications.</p><p>The project is <a href="https://github.com/ympbyc/Pasta">hosted on GitHub</a>. Eaxample application is available <a href="http://ympbyc.github.io/Pasta/examples/todo-pasta/">here</a>.</p></section><section id="downloads"><h2>Downloads and Dependencies</h2><div><a class="btn btn-blue" href="https://raw.github.com/ympbyc/Pasta/master/Pasta.js">Pasta.js (master)</a><em> 2kb uncompressed</em><p>Pasta depends on <a href="http://underscorejs.org/">Underscore</a> (or lodash if you prefer), and <a href="https://github.com/ympbyc/underscore-fix">Underscore-fix</a>. <a href="http://jquery.com/">jQuery</a> is optional.</p></div></section><section id="not-your-daddy"><h2>Not Your Daddy's MVC Framework</h2><p>In fact, Pasta isn't even a framework, nor a library but a single 35 line function. If you are familier with FP(Functional Programming), Pasta is a higher order function much like <span class="code">fold</span> and <span class="code">compose</span> . Just like <span class="code">fold</span> abstracting the essence of recursion, Pasta abstracts the essence of entire JavaScript application. Just like <span class="code">compose</span> taking functions to create a function, Patsa takes collections of functions to create an application. If frameworks are tools or guidelines to construct a building, <span class="important">Pasta is a machine that builds the entire building according to the blueprint you feed it.</span></p></section><hr /><section id="smallest-example"><h2>Smallest Example</h2><p>Let me show you a tiny example. Just note it's a bit overkill to use Pasta for an app of this size.</p><pre class="prettyprint">
+<!DOCTYPE html><html><head><meta charset="utf-8" /><title>Pasta</title><link href="components/kraken/kraken.css" rel="stylesheet" /><link href="components/google-code-prettify/prettify.css" rel="stylesheet" /><link href="css/style.css" rel="stylesheet" /><script src="components/jquery/jquery.min.js"></script><script src="components/google-code-prettify/prettify.js"></script><script src="components/underscore/underscore-min.js"></script><script src="components/underscore-fix/underscore-fix.js"></script><script src="components/Pasta/Pasta.js"></script></head><body onload="prettyPrint()"><header><h1>Pasta</h1><i>Meta Application</i><div id="menu"><a class="btn btn-blue page" href="#content">Top</a><a class="btn btn-blue page" href="#downloads">Downloads</a><a class="btn btn-blue page" href="#smallest-example">Example</a><a class="btn btn-blue page" href="#mvc">MVC</a><a class="btn btn-blue page" href="#diagram">Diagram</a></div></header><div id="content"><div><img class="center" src="images/logo.svg" /></div><section><p>Pasta is a function that helps you write JavaScript MVC applications functionally. Pasta's state management model is heavily influenced by that of <a href="http://clojure.org/state">Clojure's</a>.</p><p>The project is <a href="https://github.com/ympbyc/Pasta">hosted on GitHub</a>. Eaxample application is available <a href="http://ympbyc.github.io/Pasta/examples/todo-pasta/">here</a>.</p></section><section id="downloads"><h2>Downloads and Dependencies</h2><div><a class="btn btn-blue" href="https://raw.github.com/ympbyc/Pasta/master/Pasta.js">Pasta.js (master)</a><em> 2kb uncompressed</em><p>Pasta depends on <a href="http://underscorejs.org/">Underscore</a> (or lodash if you prefer), and <a href="https://github.com/ympbyc/underscore-fix">Underscore-fix</a>. <a href="http://jquery.com/">jQuery</a> is optional.</p></div></section><section id="not-your-daddy"><h2>Not Your Daddy's MVC Framework</h2><p>In fact, Pasta isn't even a framework, nor a library but a single 35 line function. If you are familier with FP(Functional Programming), Pasta is a higher order function much like <span class="code">fold</span> and <span class="code">compose</span> . Just like <span class="code">fold</span> abstracting the essence of recursion, Pasta abstracts the essence of entire JavaScript application. Just like <span class="code">compose</span> taking functions to create a function, Patsa takes collections of functions to create an application. If frameworks are tools or guidelines to construct a building, <span class="important">Pasta is a machine that builds the entire building according to the blueprint you feed it.</span></p></section><hr /><section id="smallest-example"><h2>Smallest Example</h2><p>Let me show you a tiny example. Just note it's a bit overkill to use Pasta for an app of this size.</p><pre class="prettyprint">
 &lt;!doctype html&gt;
 &lt;html&gt;
 &lt;head&gt;
@@ -282,39 +282,6 @@ $('#new-todo').keyup(function (e) {
 $('#clear-completed').click(signal('clear_completed'));
 &quot;)
 
-(def diagram &quot;
-                         &lt;span class=\&quot;yellow\&quot;&gt;--------&gt;&lt;/span&gt;
- User &lt;span class=\&quot;orange\&quot;&gt;&lt;--&gt;&lt;/span&gt; UI &lt;span class=\&quot;orange\&quot;&gt;--&gt;&lt;/span&gt; Signal &lt;span class=\&quot;orange\&quot;&gt;--------&gt;&lt;/span&gt; Model
-           &lt;span class=\&quot;orange\&quot;&gt;^&lt;/span&gt;                       &lt;span class=\&quot;yellow\&quot;&gt;/&lt;/span&gt; &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;
-           &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;                      &lt;span class=\&quot;yellow\&quot;&gt;/&lt;/span&gt;  &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;
-           &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;   &lt;span class=\&quot;yellow\&quot;&gt;-----&lt;/span&gt;  State &lt;span class=\&quot;yellow\&quot;&gt;&lt;-----&lt;/span&gt;   &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;
-           &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;  &lt;span class=\&quot;yellow\&quot;&gt;/&lt;/span&gt;                      &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;
-           &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt; &lt;span class=\&quot;yellow\&quot;&gt;v&lt;/span&gt;                       &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;
-          View &lt;span class=\&quot;orange\&quot;&gt;&lt;----------------------&lt;/span&gt;
-
-
-Flow of control: &lt;span class=\&quot;orange\&quot;&gt;---------&gt;&lt;/span&gt;
-Flow of data:    &lt;span class=\&quot;yellow\&quot;&gt;---------&gt;&lt;/span&gt;
-&quot;)
-
-(def diagram-2 &quot;
-  User &lt;span class=\&quot;orange\&quot;&gt;&lt;--&gt;&lt;/span&gt; UI &lt;span class=\&quot;orange\&quot;&gt;--&gt;&lt;/span&gt; Controller
-   &lt;span class=\&quot;orange\&quot;&gt;^^&lt;/span&gt;       &lt;span class=\&quot;orange\&quot;&gt;^&lt;/span&gt;          &lt;span class=\&quot;yellow\&quot;&gt;|&lt;/span&gt;&lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;        G
-   &lt;span class=\&quot;orange\&quot;&gt;||&lt;/span&gt;       &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;   &lt;span class=\&quot;yellow\&quot;&gt;&lt;----- v&lt;/span&gt;&lt;span class=\&quot;orange\&quot;&gt;v&lt;/span&gt;        l
-   &lt;span class=\&quot;orange\&quot;&gt;||&lt;/span&gt;      View &lt;span class=\&quot;orange\&quot;&gt;&lt;-----&lt;/span&gt; Model     o S
-   &lt;span class=\&quot;orange\&quot;&gt;||&lt;/span&gt;                            b t
-   &lt;span class=\&quot;orange\&quot;&gt;|------&gt;&lt;/span&gt; UI &lt;span class=\&quot;orange\&quot;&gt;--&gt;&lt;/span&gt; Controller    a a
-   &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;        &lt;span class=\&quot;orange\&quot;&gt;^&lt;/span&gt;           &lt;span class=\&quot;yellow\&quot;&gt;|&lt;/span&gt;&lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;       l t
-   &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;        &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;   &lt;span class=\&quot;yellow\&quot;&gt;&lt;-----  v&lt;/span&gt;&lt;span class=\&quot;orange\&quot;&gt;v&lt;/span&gt;         e
-   &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;       View &lt;span class=\&quot;orange\&quot;&gt;&lt;-----&lt;/span&gt; Model
-   &lt;span class=\&quot;orange\&quot;&gt;|&lt;/span&gt;
-  &lt;span class=\&quot;orange\&quot;&gt;...&lt;/span&gt;
-
-Flow of control: &lt;span class=\&quot;orange\&quot;&gt;---------&gt;&lt;/span&gt;
-Flow of data:    &lt;span class=\&quot;yellow\&quot;&gt;---------&gt;&lt;/span&gt;
-&quot;)
-
-
 (def menu
   [:div#menu
    [:a.btn.btn-blue.page {:href &quot;#content&quot;} &quot;Top&quot;]
@@ -349,7 +316,7 @@ Flow of data:    &lt;span class=\&quot;yellow\&quot;&gt;---------&gt;&lt;/span&g
     [:div
      [:img.center {:src &quot;images/logo.svg&quot;}]]
     [:section
-     [:p &quot;Pasta is a functional approach to give structure to JavaScript applications.&quot;]
+     [:p &quot;Pasta is a function that helps you write JavaScript MVC applications functionally. Pasta's state management model is heavily influenced by that of &quot; [:a {:href &quot;http://clojure.org/state&quot;} &quot;Clojure's&quot;] &quot;.&quot;]
      [:p &quot;The project is &quot; [:a {:href &quot;https://github.com/ympbyc/Pasta&quot;} &quot;hosted on GitHub&quot;] &quot;. Eaxample application is available &quot; [:a {:href &quot;http://ympbyc.github.io/Pasta/examples/todo-pasta/&quot;} &quot;here&quot;] &quot;.&quot;]]
     [:section#downloads
      [:h2 &quot;Downloads and Dependencies&quot;]
