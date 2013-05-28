@@ -254,11 +254,7 @@ Flow of data:    <span class=\"yellow\">---------></span>
     [:section#diagram
      [:h2 "A Diagram"]
      [:p "Here is a conceptual diagram of Pasta applications."]
-     [:pre.tough
-      diagram]
-     [:p "And this is how OO-MVC applications look like."]
-     [:pre.tough
-      diagram-2]]]
+     [:img {:src "images/pasta_diagram.svg"}]]]
    [:script "
 $('a.page').click(function (e) {
   e.preventDefault();

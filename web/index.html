@@ -142,35 +142,7 @@ $('#new-todo').keyup(function (e) {
 });
 
 $('#clear-completed').click(signal('clear_completed'));
-</pre><p>Controllers are not grouped into a module because there's no need to. Controllers can be anything that <span class="code">signal</span>s. A signal invokes a model function and whatever you feed to <span class="code">signal</span> becomes the second argument to the function.</p></section></section><hr /><section id="diagram"><h2>A Diagram</h2><p>Here is a conceptual diagram of Pasta applications.</p><pre class="tough">
-                         <span class="yellow">--------></span>
- User <span class="orange"><--></span> UI <span class="orange">--></span> Signal <span class="orange">--------></span> Model
-           <span class="orange">^</span>                       <span class="yellow">/</span> <span class="orange">|</span>
-           <span class="orange">|</span>                      <span class="yellow">/</span>  <span class="orange">|</span>
-           <span class="orange">|</span>   <span class="yellow">-----</span>  State <span class="yellow"><-----</span>   <span class="orange">|</span>
-           <span class="orange">|</span>  <span class="yellow">/</span>                      <span class="orange">|</span>
-           <span class="orange">|</span> <span class="yellow">v</span>                       <span class="orange">|</span>
-          View <span class="orange"><----------------------</span>
-
-
-Flow of control: <span class="orange">---------></span>
-Flow of data:    <span class="yellow">---------></span>
-</pre><p>And this is how OO-MVC applications look like.</p><pre class="tough">
-  User <span class="orange"><--></span> UI <span class="orange">--></span> Controller
-   <span class="orange">^^</span>       <span class="orange">^</span>          <span class="yellow">|</span><span class="orange">|</span>        G
-   <span class="orange">||</span>       <span class="orange">|</span>   <span class="yellow"><----- v</span><span class="orange">v</span>        l
-   <span class="orange">||</span>      View <span class="orange"><-----</span> Model     o S
-   <span class="orange">||</span>                            b t
-   <span class="orange">|------></span> UI <span class="orange">--></span> Controller    a a
-   <span class="orange">|</span>        <span class="orange">^</span>           <span class="yellow">|</span><span class="orange">|</span>       l t
-   <span class="orange">|</span>        <span class="orange">|</span>   <span class="yellow"><-----  v</span><span class="orange">v</span>         e
-   <span class="orange">|</span>       View <span class="orange"><-----</span> Model
-   <span class="orange">|</span>
-  <span class="orange">...</span>
-
-Flow of control: <span class="orange">---------></span>
-Flow of data:    <span class="yellow">---------></span>
-</pre></section></div><script>
+</pre><p>Controllers are not grouped into a module because there's no need to. Controllers can be anything that <span class="code">signal</span>s. A signal invokes a model function and whatever you feed to <span class="code">signal</span> becomes the second argument to the function.</p></section></section><hr /><section id="diagram"><h2>A Diagram</h2><p>Here is a conceptual diagram of Pasta applications.</p><img src="images/pasta_diagram.svg" /></section></div><script>
 $('a.page').click(function (e) {
   e.preventDefault();
   $('html,body').animate({scrollTop: $($(this).attr('href')).offset().top - $('header').height()});
@@ -432,11 +404,7 @@ Flow of data:    &lt;span class=\&quot;yellow\&quot;&gt;---------&gt;&lt;/span&g
     [:section#diagram
      [:h2 &quot;A Diagram&quot;]
      [:p &quot;Here is a conceptual diagram of Pasta applications.&quot;]
-     [:pre.tough
-      diagram]
-     [:p &quot;And this is how OO-MVC applications look like.&quot;]
-     [:pre.tough
-      diagram-2]]]
+     [:img {:src &quot;images/pasta_diagram.svg&quot;}]]]
    [:script &quot;
 $('a.page').click(function (e) {
   e.preventDefault();
