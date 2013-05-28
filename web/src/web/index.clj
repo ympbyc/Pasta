@@ -254,7 +254,9 @@ Flow of data:    <span class=\"yellow\">---------></span>
     [:section#diagram
      [:h2 "A Diagram"]
      [:p "Here is a conceptual diagram of Pasta applications."]
-     [:img {:src "images/pasta_diagram.svg"}]]]
+     [:img {:src "images/pasta_diagram.svg"}]
+     [:p "Which looks a lot like the diagram of Clojure's time model from " [:a {:href "http://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey"} "Are We There Yet."]]
+     [:img {:src "images/arewethereyetTimeModel.png"}]]]
    [:script "
 $('a.page').click(function (e) {
   e.preventDefault();
