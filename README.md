@@ -18,10 +18,10 @@ API
 
 ### Pasta/4
 
-Pasta takes all it needs to setup an application for you and returns an instance of pasta.
+Pasta takes all it needs to setup an application for you and returns a function called `signal`.
 
 ```javascript
-Pasta(Model, UI, View, initialData); //=> a Pasta
+Pasta(Model, UI, View, initialData); //=> signal
 ```
 
 ### signal/1, signal/2
@@ -37,7 +37,7 @@ $("button").click(pasta.signal("some_function_name", function (ev) {
 DOCS
 ----
 
-[http://ympbyc.github.io/Pasta/web/#mvc](See Documentation)
+[See Documentation](http://ympbyc.github.io/Pasta/web/#mvc)
 
 Pasta
 -----
