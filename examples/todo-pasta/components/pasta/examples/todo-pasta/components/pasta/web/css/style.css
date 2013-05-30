@@ -1,0 +1,95 @@
+body {
+    background-color: #e1e1e1;
+    font-size: 14px;
+    color: #262734;
+}
+
+header h1{
+    margin: 2px 2px -12px 17px;
+    font-weight: bold;
+    font-size: 2em;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-left: 4px;
+    color: #262734;
+    border-bottom: 3px solid #e6c213;
+    font-size: 16px;
+    background-color: inherit;
+}
+
+section {
+    margin-bottom: 2em;
+}
+
+h2 {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+pre {
+  border-radius: 4px;
+}
+
+input {
+    margin-bottom: 6px;
+}
+
+i {
+    font-style: italic;
+}
+
+.code {
+    border: 1px solid #a3a3a3;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    padding: 1px 3px;
+    font-family: monospace;
+}
+
+.important {
+    border-bottom: 2px solid #CC6D0D;
+}
+
+.tough {
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.demo {
+    border: 1px solid #a3a3a3;
+    border-radius: 4px;
+    padding: 4px;
+    font-family: sans-serif;
+}
+
+.yellow {
+    color: #e6c213;
+}
+
+.orange {
+    color: #CC6D0D;
+}
+
+#content {
+    margin: 80px auto;
+    padding: 20px 80px 20px;
+    max-width: 700px;
+    font-family: serif;
+}
+
+
+/* Google code prettifier */
+
+.prettyprint .com {
+    color: #a3a3a3;
+}
+
+.prettyprint .atv,
+.prettyprint .str {
+    color:  #e6c213;
+}

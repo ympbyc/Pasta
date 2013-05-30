@@ -1,25 +1,11 @@
 Pasta
 =====
 
-**Mostly Functional MVC Framework**
+**Meta Application Function**
 
 2012 Minori Yamashita <ympbyc@gmail.com>
 
-```
- .----------------.  .----------------.  .----------------.  .----------------.  .----------------.
-| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
-| |   ______     | || |      __      | || |    _______   | || |  _________   | || |      __      | |
-| |  |_   __ \   | || |     /  \     | || |   /  ___  |  | || | |  _   _  |  | || |     /  \     | |
-| |    | |__) |  | || |    / /\ \    | || |  |  (__ \_|  | || | |_/ | | \_|  | || |    / /\ \    | |
-| |    |  ___/   | || |   / ____ \   | || |   '.___`-.   | || |     | |      | || |   / ____ \   | |
-| |   _| |_      | || | _/ /    \ \_ | || |  |`\____) |  | || |    _| |_     | || | _/ /    \ \_ | |
-| |  |_____|     | || ||____|  |____|| || |  |_______.'  | || |   |_____|    | || ||____|  |____|| |
-| |              | || |              | || |              | || |              | || |              | |
-| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
- '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
-```
-
-Pasta is an extremely lightweight (65 lines - uncompressed) function oriented MVC framework for JavaScript.
+> Pasta is a function that helps you write JavaScript MVC applications functionally.
 
 Dependencies
 ------------
@@ -32,10 +18,10 @@ API
 
 ### Pasta/4
 
-Pasta takes all it needs to setup an application for you and returns an instance of pasta.
+Pasta takes all it needs to setup an application for you and returns a function called `signal`.
 
 ```javascript
-Pasta(Model, UI, View, initialData); //=> a Pasta
+Pasta(Model, UI, View, initialData); //=> signal
 ```
 
 ### signal/1, signal/2
@@ -48,137 +34,29 @@ $("button").click(pasta.signal("some_function_name", function (ev) {
 }));
 ```
 
-MVC
----
+DOCS
+----
 
-### State
+[See Documentation](http://ympbyc.github.io/Pasta/web/#mvc)
 
-Pasta manages one big plain hashtable to maintain its state. Pasta applications proceed by changing this hashtable and react to that change.
+Pasta
+-----
 
-An example data would look something like this.
+### models time correctly ###
 
-```javascript
-var appData = {
-  user:    {id:1234, name:'Sam'},
-  friends: [{name:'Mike'}, {name:'Tom'}],
-  notes:   [{id:12, text:'hello'}],
-  editing: {text: 'i am typin'}
-};
-```
+Pasta's state management model is heavily influenced by that of [Clojure's](http://clojure.org/state). There is no data mutated throughout the execution.
 
-Because it is an ordinary JavaScript object, you can store it basically anywhere. Imagine sending the running application state to your server in JSON format and resume from there whenever you get back.
+### is capable of handling meta-applications ###
 
-### Model
-
-The model is one big hashtable of functions. Each function receives the state, whatever a data user has sent, and a reference to `Pasta#signal` function which we will come back to later.
-
-The model is responsible for modifying the state although it is not allowed to directly touch it. Each function in the model returns a patch hashtable that will get merged to the state by Pasta.
-
-```javascript
-var Model = _.module(
-  {},
-
-  function edit_name (state, new_name) {
-    return {user: _.assoc(state.user, 'name', new_name)};
-  },
-
-  function add_note (state, note, signal) {
-    $.post('/notes', note, signal("note_added"), 'json');
-    return {};
-  },
-
-  function note_added (state, result, signal) {
-    return {notes: state.notes.concat(result)};
-  }
-);
-```
-
-More on the `signal` later.
-
-Note: the code above doesn't run on IE. You could just use a plain hashtable instead of relying on `_.module` if you need to support IE.
-
-### UI
-
-The UI is one big hashtable of functions. The UI is not really a part of Pasta but it's there just for convenience. You can put UI manipulation helpers in this module.
-
-```javascript
-var UI = _.module(
-  {},
-
-  function change_name (name) {
-    $(".user-name").text(name);
-  },
-
-  function render_notes_list (notes) {
-    _.each(notes, function (n) {
-      //...
-    });
-  }
-);
-```
-
-### View
-
-The view is one big hashtable of functions. Each function receives the UI module, the current state, and the old value of the field the function is responsible for. The role of the view is to reflect the changes made to the state to the actual UI.
-
-```javascript
-var View = _.module(
-  {},
-
-  //this gets called whenever the `user` field in the state changes
-  function user (UI, state, oldVal) {
-    if (state.user.name !== oldVal.name) {
-      alert('Bye ' + oldVal.name '. Hello ' + state.user.name + '.');
-      UI.change_name(state.user.name);
-    }
-  },
-
-  //this gets called whenever the `notes` field in the state changes
-  function notes (UI, state) {
-    UI.render_notes_list(state.notes);
-  }
-);
-```
-
-### Application
-
-When you have prepared your model, ui and the view, it's time to feed them all to Pasta. The function `Pasta` will wire the modules to generate your application. Pasta function produces a function named `signal` which you might want to bind to a variable for later use.
-
-
-### Controller
-
-A controller is whatever that calls `signal`. You tipically call this function when user interacts with the UI, such as clicking on a button or typing in his/her name to a text field. One signal invokes one of the functions defined in the model module.
-
-```javascript
-//invokes Model.edit_name
-$("button").click(signal("edit_name", function (ev) {
-  return "Dave";
-}));
-```
-
-
-How it works
-------------
-
-![How Pasta works](https://raw.github.com/ympbyc/Pasta/master/assets/img/diagram.png)
-
-Pasta is
---------
-
-### capable of handling meta-applications ###
-
-Pasta is a great tool to avoid pieces of states scattered all over your app.
+Pasta is a great tool to avoid pieces of uncontrolled states scattered all over your app.
 If your app is made up of hundreds of mutable objects, it is rather cumbersome to gather them all and inspect or save the state of the app while it is running.
-Meanwhile, Pasta forces every changeable data to be put into **the state**, allowing us to inspect, save, load, metaprogram the app.
+Meanwhile, Pasta forces every changeable data to be put into one big hashmap, allowing us to inspect, save, load, metaprogram the app.
 
-### platform independent ###
+### is platform independent ###
 
 Pasta does not assume a particular platform where it is used. You can use Pasta in any JavaScript environment with any GUI APIs.
 
-Pasta is not
-------------
-
-### object oriented ###
+### is not object oriented ###
 
 This is very important. Pasta does not mix data and behaviours. models and views are collections only of functions,
 and the state is a collection only of data. With Pasta, it is highly possible to create apps that do not contain a single `this` keyword.
