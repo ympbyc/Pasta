@@ -1,0 +1,12 @@
+{
+  "name": "pasta-todo",
+  "version": "0.1.0",
+  "dependencies": {
+    "todomvc-common": "~0.1.4",
+    "jquery": "~2.0.0",
+    "underscore": "~1.4.4",
+    "underscore-fix": "git://github.com/ympbyc/underscore-fix.git",
+    "pasta": "git://github.com/ympbyc/Pasta.git",
+    "director": "git://github.com/flatiron/director.git"
+  }
+}

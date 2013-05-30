@@ -64,60 +64,60 @@
    [:script code-smallest-js]])
 
 (def code-model-js "
-var Model = _.module(
-    {},
+var Model = _.module({}, add_todo, toggle_status, clear_completed, save_app, load_app);
 
-    //add a new todo entry
-    function add_todo (state, title) {
-        //check that it's not empty before creating a new todo.
-        var trimmed_title = title.trim();
-        if (_.isEmpty(trimmed_title)) return {};
-        return { todos: state.todos.concat({title: title, completed: false}) };
-    },
+//Add a new todo entry
+function add_todo (state, title) {
+    //check that it's not empty before creating a new todo.
+    var trimmed_title = title.trim();
+    if (_.isEmpty(trimmed_title)) return {};
+    return { todos: state.todos.concat({title: title, completed: false}) };
+}
 
-    //mark a todo either active or complete
-    function toggle_status (state, data) {
-        return { todos: _.map(state.todos, function (todo) {
-            if (todo === data.todo) return _.assoc(todo, 'completed', data.completed);
-            return todo;
-        }) };
-    },
 
-    //clear completed todos
-    function clear_completed (state) {
-        return { todos: _.reject(state.todos, _.flippar(_.at, 'completed')) };
-    },
+//Mark a todo either active or complete
+function toggle_status (state, data) {
+    return { todos: _.map(state.todos, function (todo) {
+        if (todo === data.todo) return _.assoc(todo, 'completed', data.completed);
+        return todo;
+    }) };
+}
 
-    function save_app (state) {
-        localStorage.setItem('pasta-todo', JSON.stringify(state));
-        return {};
-    },
 
-    function load_app (state) {
-        return localStorage.getItem('pasta-todo')
-            || { todos: [] };
-    }
-);
+//Clear completed todos
+function clear_completed (state) {
+    return { todos: _.reject(state.todos, _.flippar(_.at, 'completed')) };
+}
+
+
+//Save the entire app to localStorage
+function save_app (state) {
+    localStorage.setItem('pasta-todo', JSON.stringify(state));
+    return {};
+}
+
+
+//Recover the app from localStorage
+function load_app (state) {
+    return localStorage.getItem('pasta-todo')
+        || { todos: [] };
+}
 ")
 
 (def code-view-js "
-var View = _.module(
-    {},
+var View = _.module({}, todos);
 
-    function todos (UI, state) {
-        UI.render_todos(state.todos);
-    }
-);
+function todos (UI, state) {
+    UI.render_todos(state.todos);
+}
 ")
 
 (def code-ui-js "
-var UI = _.module(
-    {},
+var UI = _.module({}, render_todos);
 
-    function render_todos (todos) {
-        $('#todos').html(_.template(TODOS_TEMPLATE, todos));
-    }
-)
+function render_todos (todos) {
+    $('#todos').html(_.template(TODOS_TEMPLATE, todos));
+}
 ")
 
 (def code-controller-js "
@@ -127,23 +127,17 @@ $('#new-todo').keyup(function (e) {
     }
 });
 
+
 $('#clear-completed').click(signal('clear_completed'));
 ")
 
-(def diagram "
-                         <span class=\"yellow\">--------></span>
- User <span class=\"orange\"><--></span> UI <span class=\"orange\">--></span> Signal <span class=\"orange\">--------></span> Model
-           <span class=\"orange\">^</span>                       <span class=\"yellow\">/</span> <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span>                      <span class=\"yellow\">/</span>  <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span>   <span class=\"yellow\">-----</span>  State <span class=\"yellow\"><-----</span>   <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span>  <span class=\"yellow\">/</span>                      <span class=\"orange\">|</span>
-           <span class=\"orange\">|</span> <span class=\"yellow\">v</span>                       <span class=\"orange\">|</span>
-          View <span class=\"orange\"><----------------------</span>
-
-
-Flow of control: <span class=\"orange\">---------></span>
-Flow of data:    <span class=\"yellow\">---------></span>
-")
+(def menu
+  [:div#menu
+   [:a.btn.btn-blue.page {:href "#content"} "Top"]
+   [:a.btn.btn-blue.page {:href "#downloads"} "Downloads"]
+   [:a.btn.btn-blue.page {:href "#smallest-example"} "Example"]
+   [:a.btn.btn-blue.page {:href "#mvc"} "MVC"]
+   [:a.btn.btn-blue.page {:href "#diagram"} "Diagram"]])
 
 (defn html-head []
   [:head
@@ -165,54 +159,77 @@ Flow of data:    <span class=\"yellow\">---------></span>
   [:body {:onload "prettyPrint()"}
    [:header
     [:h1 "Pasta"]
-    [:i "Meta Application"]]
+    [:i "Meta Application"]
+    menu]
    [:div#content
+    [:div
+     [:img.center {:src "images/logo.svg"}]]
     [:section
+     [:p "Pasta is a function that helps you write JavaScript MVC applications functionally. Pasta's state management model is heavily influenced by that of " [:a {:href "http://clojure.org/state"} "Clojure's"] "."]
+     [:p "The project is " [:a {:href "https://github.com/ympbyc/Pasta"} "hosted on GitHub"] ". Eaxample application is available " [:a {:href "http://ympbyc.github.io/Pasta/examples/todo-pasta/"} "here"] "."]]
+    [:section#downloads
+     [:h2 "Downloads and Dependencies"]
+     [:div
+      [:a.btn.btn-blue {:href "https://raw.github.com/ympbyc/Pasta/master/Pasta.js"} "Pasta.js (master)"] [:em " 2kb uncompressed"]
+      [:p "Pasta depends on " [:a {:href "http://underscorejs.org/"} "Underscore"] " (or lodash if you prefer), and " [:a {:href "https://github.com/ympbyc/underscore-fix"} "Underscore-fix"] ". " [:a {:href "http://jquery.com/"} "jQuery"] " is optional."]]]
+    [:section#not-your-daddy
      [:h2 "Not Your Daddy's MVC Framework"]
      [:p "In fact, Pasta isn't even a framework, nor a library but a single 35 line function. If you are familier with FP(Functional Programming), Pasta is a higher order function much like " [:span.code "fold"] " and " [:span.code "compose"] " . Just like " [:span.code "fold"] " abstracting the essence of recursion, Pasta abstracts the essence of entire JavaScript application. Just like " [:span.code "compose"] " taking functions to create a function, Patsa takes collections of functions to create an application. If frameworks are tools or guidelines to construct a building, " [:span.important "Pasta is a machine that builds the entire building according to the blueprint you feed it."]]]
-    [:section
+    [:hr]
+    [:section#smallest-example
      [:h2 "Smallest Example"]
      [:p "Let me show you a tiny example. Just note it's a bit overkill to use Pasta for an app of this size."]
      [:pre.prettyprint
       code-smallest-html]
-     [:p "Here you can see what Pasta depends on. " [:a {:href "http://underscorejs.org/"} "Underscore"] "(or lodash if you prefer), and " [:a {:href "https://github.com/ympbyc/underscore-fix"} "Underscore-fix"] ". jQuery is optional."]
      [:pre#code-smallest.prettyprint
       code-smallest-js]
      [:p "Here goes the live demo."]
      demo-smallest]
+    [:hr]
     [:section
      [:h2 "Pasta Is Simple"]
      [:p [:strong "Simple"] " in the sense Rich Hickey told us in his talk " [:a {:href "http://www.infoq.com/presentations/Simple-Made-Easy"} "Simple Made Easy"] ". Pasta lets you treat " [:span.important "data as data"] " and it turns " [:span.important "uncontrolled global state into a concrete first-class value"] ". Pasta is mostly functional. The model is a collection of pure functions. The application itself is a pure function that maps an application state to an UI state."]
      [:p "Pasta is simple because Pasta apps are not object oriented. Objects should be avoided where possible because they introduce implicit global state, makes it hard to inspect data (you know, \"" [:i "information hiding"] "\") and makes it so easy to corrupt data."]
-     [:p "Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore (or lodash). There are good UI manipulation libraries already, namely jQuery (or Zepto). No point reinventing the wheel is there?"]]
-    [:section
+     [:p "Pasta is simple because it doesn't do anything that it isn't supporsed to do. There are good data manipulation libraries already, namely Underscore. There are good UI manipulation libraries already, namely jQuery. No point reinventing the wheel is there?"]]
+    [:hr]
+    [:section#mvc
      [:h2 "MVC the Pasta way"]
      "With all that in mind, lets see how Pasta effectively forces presentation domain separation, by looking at the classic TodoMVC example. The full source is available " [:a {:href "https://github.com/ympbyc/Pasta/tree/master/examples/todo-pasta"} "here"] "."
      [:section
       [:h3 "Model"]
       [:pre.prettyprint code-model-js]
       [:p "The Model is a hashmap mapping signal names to binary functions. " [:span.code "_.module()"] " provides a nice way to write hashmap-of-functions prettily. Each function receives the current state as its first argument. The second is whatever is passed in via a signal which we will come to later. The state is just a plain hashmap which you mustn't mutate yourself. The role of each function is to return a patch. Patches are, again, just a plain hashmap."]
-      [:p "Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is easy peasy."]]
+      [:p "Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is a piece of cake."]]
      [:section
       [:h3 "View"]
       [:pre.prettyprint code-view-js]
-      [:p "The view is a hashmap mapping field names of the state to ternary functions. Each function gets called whenever the field that the function is responsible for. The first argument is the UI module which we will see next. The second is the new state after the change. The last argument is the value of the field before the change. The role of each function is to call functions (uh, ahem) subroutines in the UI module. Although the functions receive the state, mutating it is no use since it is a fresh copy. Don't try."]]
+      [:p "The view is a hashmap mapping field names of the state to ternary functions. Each function gets called whenever the field the function is responsible for changes. The first argument is the UI module which we will see next. The second is the new state after the change. The last argument is the value of the field before the change. The role of each function is to call functions (uh, ahem, subroutines) in the UI module. Although the functions receive the state, mutating it is no use since it is a fresh copy. Don't try."]]
      [:section
       [:h3 "UI"]
       [:pre.prettyprint code-ui-js]
-      [:p "No description is needed for the UI module because it isn't really a part of Pasta. Pasta does not care how you manage the UI, making Pasta portable accross different platforms. In fact Pasta initily targeted Titanium Mobile as a platform and it probably runs still."]]
+      [:p "No description is needed for the UI module because it isn't really a part of Pasta. Pasta does not care how you manage the UI. this makes Pasta portable accross different platforms. In fact Pasta initialy targeted Titanium Mobile as a platform and it probably still runs."]]
      [:section
       [:h3 "Generation of An App"]
       [:pre.prettyprint "var pasta_signal = Pasta(Model, UI, View);"]
-      [:p "Throw all of the above three modules at " [:span.code "Pasta"] " to generate the app. " [:span.code "Pasta"] " leaves a function behind which is the only one connection we have to the running app. We will make heavy use of this function in controllers."]]
+      [:p "Throw all of the above three modules at " [:span.code "Pasta"] " to generate the app. " [:span.code "Pasta"] " leaves a function behind which is the only connection we have to the running app. We will make heavy use of this function in our controllers."]]
      [:section
       [:h3 "Controller"]
       [:pre.prettyprint code-controller-js]
-      [:p "Controllers are not grouped into a module because there's no need to. Controllers can be anything that " [:span.code "signal"] "s. A signal invokes a model function and whatever you feed to " [:span.code "signal"] " becomes the second argumentof the functions in the model."]]]
-    [:section
+      [:p "Controllers are not grouped into a module because there's no need to. Controllers can be anything that " [:span.code "signal"] "s. A signal invokes a model function and whatever you feed to " [:span.code "signal"] " becomes the second argument to the function."]]]
+    [:hr]
+    [:section#diagram
      [:h2 "A Diagram"]
-     [:pre.tough
-      diagram]]]])
+     [:p "Here is a conceptual diagram of Pasta applications."]
+     [:img {:src "images/pasta_diagram.svg"}]
+     [:p "Which looks a lot like the diagram of Clojure's time model from " [:a {:href "http://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey"} "Are We There Yet."]]
+     [:img {:src "images/arewethereyetTimeModel.png"}]]]
+   [:script "
+$('a.page').click(function (e) {
+  e.preventDefault();
+  $('html,body').animate({scrollTop: $($(this).attr('href')).offset().top - $('header').height()});
+  return false;
+});
+"]])
 
 (defn main-html []
   (h/html

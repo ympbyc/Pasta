@@ -8,6 +8,9 @@
 
 var Pasta = (function () {
 
+  if (typeof Object.freeze === "undefined")
+    Object.freeze = _.identity;
+
   //Hide informations that are not necessary for the model, but for execution
   var mainloopGenerator = function (config, modifyState, signal) {
     return function (state, ev, ev_val) {
@@ -34,7 +37,7 @@ var Pasta = (function () {
 
     //Call appropriate functions of the view
     function autoUpdate (patch) {
-      var tempState = _.merge(appState, patch);
+      var tempState = Object.freeze(_.merge(appState, patch));
       _.foldl(patch, function (acc, change, key) {
         if (updateRule[key] !== undefined) updateRule[key](UIAPI, tempState, appState[key]);
       }, null);
@@ -42,8 +45,10 @@ var Pasta = (function () {
 
     //call `autoUpdate`. When done, merge the patch to the current appState
     function modifyState (patch) {
-      autoUpdate(patch);         //apply changes to UIs
-      _.extend(appState, patch); //destructively update appState
+      _.each(patch, Object.freeze);
+      autoUpdate(patch);                   //apply changes to UIs
+      appState = _.merge(appState, patch); //destructively update appState
+      Object.freeze(appState);             //freeze!
     };
 
     return signal;

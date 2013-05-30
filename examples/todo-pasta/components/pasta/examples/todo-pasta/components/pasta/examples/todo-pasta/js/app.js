@@ -1,5 +1,5 @@
 (function( window ) {
-	'use strict';
+        'use strict';
 
   /* Pasta
    * Throw everything into the pan to make a pasta plate

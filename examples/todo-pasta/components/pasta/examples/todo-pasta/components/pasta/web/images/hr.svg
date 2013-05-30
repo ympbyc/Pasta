@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="540" height="40">
+    <desc iVinci="yes" version="2.9" gridStep="20" showGrid="no" snapToGrid="no" codePlatform="0"/>
+    <g id="Layer0">
+        <g id="Shape1">
+            <desc type="0" basicInfo-basicType="0" basicInfo-roundedRectRadius="12" basicInfo-polygonSides="6" basicInfo-starPoints="5" text="" font-familyName="" font-pointSize="20" font-weight="-1" strokeStyle="0" markerStart="0" markerEnd="0" shadowEnabled="0" shadowOffsetX="0" shadowOffsetY="2" shadowBlur="4" shadowOpacity="160" transform="matrix(1,0,0,1,265,20)" locked="0" mesh="" flag=""/>
+            <path id="shapePath1" d="M6,23.6904 C6,23.6904 100,-4.30962 137,21.6904 C174,47.6904 241,-3.30962 267,18.6904 C293,40.6904 394,-12.3096 413,17.6904 C432,47.6904 524,14.6904 524,14.6904 C524,14.6904 432,49.6904 411,18.6904 C390,-12.3096 274,42.6904 267,19.6904 C260,-3.30962 147,52.6904 137,22.6904 C127,-7.30962 6,23.6904 6,23.6904 Z" style="stroke:#323232;stroke-opacity:1;stroke-width:1;stroke-linejoin:miter;stroke-miterlimit:2;stroke-linecap:round;fill-rule:evenodd;fill:#cccc99;fill-opacity:1;"/>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,17 @@
+{
+  "name": "varicon",
+  "version": "0.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components"
+  ],
+  "dependencies": {
+    "jquery": "~2.0.0",
+    "underscore": "~1.4.4",
+    "dss": "git://github.com/ympbyc/dss.git",
+    "js-clos": "git://github.com/ympbyc/js-clos.git",
+    "underscore-fix": "git://github.com/ympbyc/underscore-fix.git",
+    "pasta": "git://github.com/ympbyc/Pasta.git"
+  }
+}

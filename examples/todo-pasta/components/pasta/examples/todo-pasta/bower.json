@@ -6,7 +6,7 @@
     "jquery": "~2.0.0",
     "underscore": "~1.4.4",
     "underscore-fix": "git://github.com/ympbyc/underscore-fix.git",
-    "pasta": "git://github.com/ympbyc/Pasta.git",
+    "pasta": "../../",
     "director": "git://github.com/flatiron/director.git"
   }
 }

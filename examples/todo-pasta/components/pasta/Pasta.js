@@ -45,7 +45,6 @@ var Pasta = (function () {
 
     //call `autoUpdate`. When done, merge the patch to the current appState
     function modifyState (patch) {
-      _.each(patch, Object.freeze);
       autoUpdate(patch);                   //apply changes to UIs
       appState = _.merge(appState, patch); //destructively update appState
       Object.freeze(appState);             //freeze!
