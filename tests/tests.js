@@ -33,11 +33,18 @@ var View = _.module(
     {},
 
     function user (UI, state, oldVal) {
-        test("view", function () {
-            se(state.user.name, "Dave", "The change properly propagated to the view");
+        test("view1", function () {
+            se(state.user.name, "Dan", "initial event firing");
             se(typeof UI.change_name, "function", "UI module is passed in");
             se(oldVal.name, "Dan", "old value is passed in");
         });
+        _.module(View,
+                 function user (UI, state, oldVal) {
+                     test("view2", function () {
+                         se(state.user.name, "Dave", "The change properly propagated to the view");
+                         se(oldVal.name, "Dan", "old value is passed in");
+                     });
+                 });
     }
 );
 

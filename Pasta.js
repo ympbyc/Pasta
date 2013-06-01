@@ -14,8 +14,7 @@ var Pasta = (function () {
   //Hide informations that are not necessary for the model, but for execution
   var mainloopGenerator = function (config, modifyState, signal) {
     return function (state, ev, ev_val) {
-      var kont = function (patch) { modifyState(patch); };
-      kont(config[ev](state, ev_val, signal)); //no longer passes `send`
+      modifyState(config[ev](state, ev_val, signal));
     };
   };
 
@@ -49,6 +48,8 @@ var Pasta = (function () {
       appState = _.merge(appState, patch); //destructively update appState
       Object.freeze(appState);             //freeze!
     };
+
+    modifyState(initState); //init
 
     return signal;
   };
