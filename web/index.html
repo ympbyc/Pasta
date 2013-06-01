@@ -141,7 +141,11 @@ $('#new-todo').keyup(function (e) {
 
 
 $('#clear-completed').click(signal('clear_completed'));
-</pre><p>Controllers are not grouped into a module because there's no need to. Controllers can be anything that <span class="code">signal</span>s. A signal invokes a model function and whatever you feed to <span class="code">signal</span> becomes the second argument to the function.</p></section></section><hr /><section id="diagram"><h2>A Diagram</h2><p>Here is a conceptual diagram of Pasta applications.</p><img src="images/pasta_diagram.svg" /><p>Which looks a lot like the diagram of Clojure's time model from <a href="http://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey">Are We There Yet.</a></p><img src="images/arewethereyetTimeModel.png" /></section></div><script>
+</pre><p>Controllers are not grouped into a module because there's no need to. Controllers can be anything that <span class="code">signal</span>s. A signal invokes a model function and whatever you feed to <span class="code">signal</span> becomes the second argument to the function.</p></section></section><hr /><section id="diagram"><h2>A Diagram</h2><p>Here is a conceptual diagram of Pasta applications.</p><img src="images/pasta_diagram.svg" /><p>Which looks a lot like the diagram of Clojure's time model from <a href="http://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey">Are We There Yet.</a></p><img src="images/arewethereyetTimeModel.png" /></section><section><h2>Experimental Features</h2><p>A common syntactic pattern found in Pasta app is the duplication of identity name in a line. When you change the value of an identity, you need to do something like this: </p><pre class="prettyprint">function add_todo (st, title) {
+    return { todos: _.conj(state.todos, {title: title, completed: false})};
+}</pre><p>This is a bit annoying so I came up with this following syntax.</p><pre class="prettyprint">function add_todo (st, title) {
+    return { todos: [_.conj, {title: title, completed: false}] };
+}</pre><p>If you think this is a good idea, you can enable it by passing <span class="code">true</span> as the fifth argument to <span class="code">Pasta</span>. I also recommend to check out <a href="http://ympbyc.github.io/Macaroni/web">Macaroni</a> in which it takes full advantage of this strange syntax.</p></section></div><script>
 $('a.page').click(function (e) {
   e.preventDefault();
   $('html,body').animate({scrollTop: $($(this).attr('href')).offset().top - $('header').height()});
@@ -371,7 +375,18 @@ $('#clear-completed').click(signal('clear_completed'));
      [:p &quot;Here is a conceptual diagram of Pasta applications.&quot;]
      [:img {:src &quot;images/pasta_diagram.svg&quot;}]
      [:p &quot;Which looks a lot like the diagram of Clojure's time model from &quot; [:a {:href &quot;http://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey&quot;} &quot;Are We There Yet.&quot;]]
-     [:img {:src &quot;images/arewethereyetTimeModel.png&quot;}]]]
+     [:img {:src &quot;images/arewethereyetTimeModel.png&quot;}]]
+    [:section
+     [:h2 &quot;Experimental Features&quot;]
+     [:p &quot;A common syntactic pattern found in Pasta app is the duplication of identity name in a line. When you change the value of an identity, you need to do something like this: &quot;]
+     [:pre.prettyprint &quot;function add_todo (st, title) {
+    return { todos: _.conj(state.todos, {title: title, completed: false})};
+}&quot;]
+     [:p &quot;This is a bit annoying so I came up with this following syntax.&quot;]
+     [:pre.prettyprint &quot;function add_todo (st, title) {
+    return { todos: [_.conj, {title: title, completed: false}] };
+}&quot;]
+     [:p &quot;If you think this is a good idea, you can enable it by passing &quot; [:span.code &quot;true&quot;] &quot; as the fifth argument to &quot; [:span.code &quot;Pasta&quot;] &quot;. I also recommend to check out &quot; [:a {:href &quot;http://ympbyc.github.io/Macaroni/web&quot;} &quot;Macaroni&quot;] &quot; in which it takes full advantage of this strange syntax.&quot;]]]
    [:script &quot;
 $('a.page').click(function (e) {
   e.preventDefault();

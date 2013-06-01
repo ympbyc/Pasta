@@ -19,10 +19,10 @@ var Pasta = (function () {
   };
 
 
-  var Pasta = function (appModel, UIAPI, updateRule, initState) {
+  var Pasta = function (Model, UIAPI, View, initState, edge) {
     var self = {};       //interface to the external world
     var appState = initState || {};   //mutable application state
-    var mainloop = mainloopGenerator(appModel, modifyState, signal);
+    var mainloop = mainloopGenerator(Model, modifyState, signal);
 
     //`signal` have to be defined here because it accesses the closed mutable value `appState`
     function signal (ev_name, fn) {
@@ -36,20 +36,42 @@ var Pasta = (function () {
 
     //Call appropriate functions of the view
     function autoUpdate (patch) {
-      var tempState = Object.freeze(_.merge(appState, patch));
+
+      var tempState = Object.freeze(stateMerge(appState, patch));
       _.foldl(patch, function (acc, change, key) {
-        if (updateRule[key] !== undefined) updateRule[key](UIAPI, tempState, appState[key]);
+        if (View[key] !== undefined) View[key](UIAPI, tempState, appState[key]);
       }, null);
     }
 
     //call `autoUpdate`. When done, merge the patch to the current appState
     function modifyState (patch) {
       autoUpdate(patch);                   //apply changes to UIs
-      appState = _.merge(appState, patch); //destructively update appState
+      appState = stateMerge(appState, patch); //destructively update appState
       Object.freeze(appState);             //freeze!
     };
 
-    modifyState(initState); //init
+
+    /**** EXPERIMENTAL ****/
+    /** Enable `edge` to use these features **/
+    if ( ! edge)
+      function stateMerge (state, patch) {
+        return _.merge(state, patch);
+      }
+    else
+      function stateMerge (state, patch) {
+        console.log(patch);
+        //experimental syntax { field: [fn, arg1, ...] }
+        return _.merge(state, _.mapmap(patch, function (patcher, field) {
+          return _.apply(_.partial(patcher[0], state[field]), _.slice(patcher, 1));
+        }));
+      }
+
+
+    if ( ! edge) modifyState(initState); //init
+    else modifyState(_.mapmap(initState, function () {
+        return [_.identity];
+    }));
+    /**** /EXPERIMENT ****/
 
     return signal;
   };

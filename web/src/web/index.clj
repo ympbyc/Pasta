@@ -222,7 +222,18 @@ $('#clear-completed').click(signal('clear_completed'));
      [:p "Here is a conceptual diagram of Pasta applications."]
      [:img {:src "images/pasta_diagram.svg"}]
      [:p "Which looks a lot like the diagram of Clojure's time model from " [:a {:href "http://www.infoq.com/presentations/Are-We-There-Yet-Rich-Hickey"} "Are We There Yet."]]
-     [:img {:src "images/arewethereyetTimeModel.png"}]]]
+     [:img {:src "images/arewethereyetTimeModel.png"}]]
+    [:section
+     [:h2 "Experimental Features"]
+     [:p "A common syntactic pattern found in Pasta app is the duplication of identity name in a line. When you change the value of an identity, you need to do something like this: "]
+     [:pre.prettyprint "function add_todo (st, title) {
+    return { todos: _.conj(state.todos, {title: title, completed: false})};
+}"]
+     [:p "This is a bit annoying so I came up with this following syntax."]
+     [:pre.prettyprint "function add_todo (st, title) {
+    return { todos: [_.conj, {title: title, completed: false}] };
+}"]
+     [:p "If you think this is a good idea, you can enable it by passing " [:span.code "true"] " as the fifth argument to " [:span.code "Pasta"] ". I also recommend to check out " [:a {:href "http://ympbyc.github.io/Macaroni/web"} "Macaroni"] " in which it takes full advantage of this strange syntax."]]]
    [:script "
 $('a.page').click(function (e) {
   e.preventDefault();
