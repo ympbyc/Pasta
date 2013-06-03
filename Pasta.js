@@ -53,18 +53,19 @@ var Pasta = (function () {
 
     /**** EXPERIMENTAL ****/
     /** Enable `edge` to use these features **/
+    var stateMerge;
     if ( ! edge)
-      function stateMerge (state, patch) {
+      stateMerge = function stateMerge (state, patch) {
         return _.merge(state, patch);
-      }
+      };
     else
-      function stateMerge (state, patch) {
+      stateMerge = function stateMerge (state, patch) {
         console.log(patch);
         //experimental syntax { field: [fn, arg1, ...] }
         return _.merge(state, _.mapmap(patch, function (patcher, field) {
           return _.apply(_.partial(patcher[0], state[field]), _.slice(patcher, 1));
         }));
-      }
+      };
 
 
     if ( ! edge) modifyState(initState); //init
