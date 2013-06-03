@@ -68,10 +68,13 @@ var Pasta = (function () {
       };
 
 
-    if ( ! edge) modifyState(initState); //init
-    else modifyState(_.mapmap(initState, function () {
-        return [_.identity];
-    }));
+
+    setTimeout(function () {
+        if ( ! edge) modifyState(initState); //init
+        else modifyState(_.mapmap(initState, function () {
+            return [_.identity];
+        }));
+    }, 0);
     /**** /EXPERIMENT ****/
 
     return signal;
