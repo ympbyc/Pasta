@@ -104,6 +104,20 @@ function load_app (state) {
 }
 ")
 
+(def code-model-server-js "
+_.module(Model, request_todos);
+
+function request_todos (st) {
+    return {todos: $.getJSON('/notes') };
+}
+
+_.module(View, todos);
+
+function todos (UI, st) {
+    st.todos.done(UI.render_todos);
+}
+")
+
 (def code-view-js "
 var View = _.module({}, todos);
 
@@ -199,7 +213,9 @@ $('#clear-completed').click(signal('clear_completed'));
       [:h3 "Model"]
       [:pre.prettyprint code-model-js]
       [:p "The Model is a hashmap mapping signal names to binary functions. " [:span.code "_.module()"] " provides a nice way to write hashmap-of-functions prettily. Each function receives the current state as its first argument. The second is whatever is passed in via a signal which we will come to later. The state is just a plain hashmap which you mustn't mutate yourself. The role of each function is to return a patch. Patches are, again, just a plain hashmap."]
-      [:p "Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is a piece of cake."]]
+      [:p "Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is a piece of cake."]
+      [:p "When you need to communicate with a server, it is recommended to use promises as state values. So for example if you need to fetch some todos from the server you would do something like this:"]
+      [:pre.prettyprint code-model-server-js]]
      [:section
       [:h3 "View"]
       [:pre.prettyprint code-view-js]
