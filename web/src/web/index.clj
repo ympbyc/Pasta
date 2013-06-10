@@ -104,18 +104,66 @@ function load_app (state) {
 }
 ")
 
+(def code-view-server-js "
+var Model = (function () {
+
+    return _.module({}, change_track, track_ready, sound_ready);
+
+    function change_track (st, url) {
+        return { track_url: url };
+    }
+
+
+    function track_ready (st, track) {
+        return { track: track };
+    }
+
+
+    function sound_ready (st, sound) {
+        return { sound: sound };
+    }
+}());
+
+var View = (function () {
+
+    return _.module({}, track_url, track, sound);
+
+
+    function track_url (UI, st) {
+        SC.get('/resolve', { url: st.track_url }, pasta_signal('track_ready'));
+    }
+
+
+    function track (UI, st) {
+        SC.stream('/tracks/' + st.track.id, pasta_signal('sound_ready'));
+    }
+
+
+    function sound (UI, st) {
+        st.sound.play();
+    }
+}());
+")
+
 (def code-model-server-js "
-_.module(Model, request_todos);
+/* Note this isn't a recommended SoundCloud API usage. */
+var Model = (function () {
 
-function request_todos (st) {
-    return {todos: $.getJSON('/notes') };
-}
+    return _.module({},  get_track);
 
-_.module(View, todos);
+    function get_track (st, url) {
+        return { track: $.get('http://api.soundcloud.com/resolve?url=https://soundcloud.com/forss/voca-nomen-tuum&client_id=XXXXXXXXX&format=json&_status_code_map[302]=200') };
+    }
+}());
 
-function todos (UI, st) {
-    st.todos.done(UI.render_todos);
-}
+var View = (function () {
+
+    return _.module({}, track);
+
+    function track (UI, st) {
+        st.track.then(function (j) { /* ... */ });
+    }
+}());
 ")
 
 (def code-view-js "
@@ -214,7 +262,9 @@ $('#clear-completed').click(signal('clear_completed'));
       [:pre.prettyprint code-model-js]
       [:p "The Model is a hashmap mapping signal names to binary functions. " [:span.code "_.module()"] " provides a nice way to write hashmap-of-functions prettily. Each function receives the current state as its first argument. The second is whatever is passed in via a signal which we will come to later. The state is just a plain hashmap which you mustn't mutate yourself. The role of each function is to return a patch. Patches are, again, just a plain hashmap."]
       [:p "Since it is advised to prefer primitive types over user-defined objects, we can do some crazy stuff like serializing it into JSON and save somewhere and recover it later. Because the state passed is a immutable value, we can store it into the state itself, meaning implementing a full `undo` functionality is a piece of cake."]
-      [:p "When you need to communicate with a server, it is recommended to use promises as state values. So for example if you need to fetch some todos from the server you would do something like this:"]
+      [:p "When you need to communicate with a server, it is recommended to place ajax calls in the view. So for example if you are trying to get a sound object from SoundCloud API you would do something like this:"]
+      [:pre.prettyprint code-view-server-js]
+      [:p "Alternatively, you could use promises as state values  but I find it makes the rest of the code a bit awkward having to read them using " [:span.code ".then"] " everywhere."]
       [:pre.prettyprint code-model-server-js]]
      [:section
       [:h3 "View"]
