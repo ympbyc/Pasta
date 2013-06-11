@@ -29,19 +29,22 @@ function render_name (name) {
 
 var View = _.module({}, user);
 
+var first_test = true;
+
 function user (UI, state, oldVal) {
-    test("view1", function () {
-        se(state.user.name, "Dan", "initial event firing");
-        se(typeof UI.render_name, "function", "UI module is passed in");
-        se(oldVal.name, "Dan", "old value is passed in");
-    });
-    _.module(View,
-             function user (UI, state, oldVal) {
-                 test("view2", function () {
-                     se(state.user.name, "Dave", "The change properly propagated to the view");
-                     se(oldVal.name, "Dan", "old value is passed in");
-                 });
-             });
+    if (first_test) {
+        first_test = false;
+        test("view1", function () {
+            se(state.user.name, "Dan", "initial event firing");
+            se(typeof UI.render_name, "function", "UI module is passed in");
+            se(oldVal.name, "Dan", "old value is passed in");
+        });
+    }
+    else
+        test("view2", function () {
+            se(state.user.name, "Dave", "The change properly propagated to the view");
+            se(oldVal.name, "Dan", "old value is passed in");
+        });
 }
 
 
@@ -49,7 +52,12 @@ var initialState = {
     user: {name: "Dan", age: 19}
 };
 
-var signal = Pasta(Model, UI, View, initialState, true);
+var signal = Pasta(Model, UI, View, initialState, true, [
+    {model: {model_plugin: function (st) {
+        test('plugin', function () {
+            se(st.user.name, "Dave", "Plugin is invoked");
+        });
+    }}}]);
 
 test("Pasta", function () {
     se(typeof signal, "function", "Pasta exports signal");
@@ -69,3 +77,5 @@ signal("change_name", function (e) {
 
     return e.val;
 })({val: "Dave"});
+
+signal("model_plugin")();

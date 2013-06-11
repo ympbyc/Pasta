@@ -19,8 +19,15 @@ var Pasta = (function () {
   };
 
 
-  var Pasta = function (Model, UIAPI, View, initState, edge) {
-    var self = {};       //interface to the external world
+  var Pasta = function (Model, UIAPI, View, initState, edge, plugins) {
+    plugins = (plugins || []).concat({model:{debug:function(st){console.log(st);}}});
+    var Model = _.extend(_.reduce(plugins, function (model, p) {
+        return _.extend(model, p.model); }, {}), Model);
+    var View  = _.extend(_.reduce(plugins, function (view, p)  {
+        return _.extend(view, p.view); }, {}), View);
+    var UIAPI = _.extend(_.reduce(plugins, function (ui, p)    {
+        return _.extend(ui, p.ui); }, {}), UIAPI);
+
     var appState = initState || {};   //mutable application state
     var mainloop = mainloopGenerator(Model, modifyState, signal);
 
@@ -60,7 +67,6 @@ var Pasta = (function () {
       };
     else
       stateMerge = function stateMerge (state, patch) {
-        console.log(patch);
         //experimental syntax { field: [fn, arg1, ...] }
         return _.merge(state, _.mapmap(patch, function (patcher, field) {
           return _.apply(_.partial(patcher[0], state[field]), _.slice(patcher, 1));
