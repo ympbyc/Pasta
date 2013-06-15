@@ -79,7 +79,7 @@ var Model = _.module(
     return {previousState: state};
   },
 
-  function back-to-the-future (state) {
+  function back_to_the_future (state) {
     //go back 2 steps
     return state.previousState.previousState;
   }
