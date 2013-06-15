@@ -89,6 +89,13 @@ var Model = _.module(
 ![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.jpg)
 
 
+Conceptually Close Projects
+---------------------------
+
++ [Worlds](http://www.vpri.org/pdf/tr2011001_final_worlds.pdf) by Viewpoint Research Institute
++ [WebFUI](https://github.com/drcode/webfui)
+
+
 Misc
 ----
 
