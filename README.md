@@ -1,11 +1,9 @@
 Pasta
 =====
 
-**Meta Application Function**
+**App as a Value**
 
 2012 Minori Yamashita <ympbyc@gmail.com>
-
-> Pasta is a function that helps you write JavaScript MVC applications functionally.
 
 Dependencies
 ------------
@@ -13,31 +11,65 @@ Dependencies
 Underscore, Underscore-fix
 
 
+Usage
+-----
+
+```javascript
+with (Pasta)
+(function () {
+  //...
+}());
+```
+
 API
 ---
 
-### Pasta/4
+### app
 
-Pasta takes all it needs to setup an application for you and returns a function called `signal`.
+Creates an instance of Pasta application.
 
 ```javascript
-Pasta(Model, UI, View, initialData); //=> signal
+var sample_app = app({friends: ["Tony", "Sam"]});
+//=> an app
 ```
 
-### signal/1, signal/2
+### deftransition
 
-`Pasta()` produces a function named `signal`. `signal()` produces a function that will call a function in your model.
+Defines a function F that receive an app and arbitrary number of arguments.
+`Deftransition` takes a function G which gets invoked with current state and the argument passed to F, when the function defined by deftransition gets called. The function G must return a hashmap of changes to the state.
 
 ```javascript
-$("button").click(pasta.signal("some_function_name", function (ev) {
-  return "data";
-}));
+/* adds a friend */
+var new_friend = deftransition(function (state, name) {
+    return { friends: _.conj(state.friends, name) };
+});
+//=> a function
+
+/* removes a friend */
+var bye_friend = deftransition(function (state, name) {
+    return { friends: _.reject(state.friends, _.eq(name)) };
+});
+//=> a function
+```
+
+### watch_transition
+
+Define a sideeffectful operation to happen whenever the field in the state changes,
+
+```javascript
+watch_transition(sample_app, function (new_state, old_state) {
+    $(".friends").text(new_state.friends.join(","));
+    $(".lost_friends").text(_.difference(old_s.friends, new_s.friends).join(","));
+});
 ```
 
 DOCS
 ----
 
+***OUTDATED**
+
 [See Documentation](http://ympbyc.github.io/Pasta/web/#mvc)
+
 
 Pasta
 -----
@@ -72,18 +104,7 @@ The state of a Pasta app can be persisted into localstorage, remote server or an
 Here goes a crazy tip: you can save the state into the state itself! If you know what I mean...
 
 ```javascript
-var Model = _.module(
-  {},
-
-  function save_history (state) {
-    return {previousState: state};
-  },
-
-  function back_to_the_future (state) {
-    //go back 2 steps
-    return state.previousState.previousState;
-  }
-);
+...
 ```
 
 ![Back to the future](https://raw.github.com/ympbyc/Pasta/master/assets/img/backtothefuture.jpg)
@@ -105,6 +126,10 @@ Pasta is licensed under MIT licence
 
 Change Log
 ----------
+
+### 2013/10/9
+
+Highly Destructive Change. Everything except the concept has changed.
 
 ### 2013/5/22
 
