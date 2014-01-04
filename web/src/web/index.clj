@@ -3,6 +3,7 @@
            [hiccup.util :as hu])
   (:gen-class))
 
+
 (def code-smallest-html (hu/escape-html "
 <!doctype html>
 <html>
